@@ -1,0 +1,17 @@
+{
+	"type": "switch",
+	"width": 2,
+	"height": 2,
+	"texture": "switch",
+	"pins": [
+		{
+			"x": 0,
+			"y": 1
+		},
+		{
+			"x": 2,
+			"y": 1
+		}
+	]
+}
+

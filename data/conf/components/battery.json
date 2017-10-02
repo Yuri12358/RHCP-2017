@@ -1,0 +1,17 @@
+{
+	"type": "battery",
+	"width": 2,
+	"height": 2,
+	"texture": "battery",
+	"pins": [
+		{
+			"x": 0,
+			"y": 1
+		},
+		{
+			"x": 2,
+			"y": 1
+		}
+	]
+}
+
