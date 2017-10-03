@@ -48,8 +48,28 @@ void App::m_handleEvents() {
 		case sf::Event::MouseButtonPressed:
 			m_handleMousePressEvent(event.mouseButton);
 			break;
+		case sf::Event::MouseButtonReleased:
+			m_handleMouseReleaseEvent(event.mouseButton);
+			break;
 		}
 	}
+}
+
+void App::m_handleMouseReleaseEvent(const sf::Event::MouseButtonEvent & event) {
+	switch (event.button) {
+	case sf::Mouse::Right:
+		m_createContextMenu(event.x, event.y);
+		break;
+	}
+}
+
+void App::m_createContextMenu(int x, int y) {
+	sf::Vector2f mouse(mapToFieldCoords(sf::Vector2i(x, y)));
+	std::string id = QuadTree::get().getComponentID(mouse);
+	if (id == "") {
+		return;
+	}
+	GUIHolder::get().createContextMenu(x, y);
 }
 
 void App::m_placeNewComponent(int pressX, int pressY) {
@@ -79,11 +99,13 @@ void App::m_placeNewComponent(int pressX, int pressY) {
 }
 
 void App::m_handleMousePressEvent(const sf::Event::MouseButtonEvent & event) {
+	GUIHolder::get().removeContextMenu();
 	switch (event.button) {
 	case sf::Mouse::Left:
 		if (JSONHolder::get()["current"].is_null()) {
 			m_selectPin(event.x, event.y);
 		} else {
+			JSONHolder::get()["selected pin"] = nlohmann::json();
 			m_placeNewComponent(event.x, event.y);
 		}
 		break;
@@ -91,6 +113,7 @@ void App::m_handleMousePressEvent(const sf::Event::MouseButtonEvent & event) {
 }
 
 void App::m_handleKeyEvent(const sf::Event::KeyEvent & event) {
+	GUIHolder::get().removeContextMenu();
 	switch (event.code) {
 	case sf::Keyboard::Escape:
 		m_window.close();

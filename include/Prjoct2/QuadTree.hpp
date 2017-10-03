@@ -42,6 +42,7 @@ public:
 	void addObject(const std::string & id);
 	std::string intersects(sf::IntRect rect);
 	nlohmann::json * getPin(int x, int y);
+	std::string getComponentID(sf::Vector2f position);
 };
 
 #endif // QUAD_TREE_HPP

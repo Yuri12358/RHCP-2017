@@ -17,6 +17,7 @@ GUIHolder::GUIHolder()
 	m_addComponentButton("battery");
 	m_addComponentButton("resistor");
 	m_addComponentButton("switch");
+	m_addComponentButton("transistor");
 	m_addComponentButton("rheostat");
 	m_addComponentButton("bell");
 	m_addComponentButton("ampermeter");
@@ -24,7 +25,6 @@ GUIHolder::GUIHolder()
 	m_addComponentButton("diode");
 	m_addComponentButton("electromagnet");
 	m_addComponentButton("fuse");
-	m_addComponentButton("transistor");
 }
 
 GUIHolder & GUIHolder::get() {
@@ -51,7 +51,7 @@ void GUIHolder::m_createComponentSelector() {
 			m_gui.get<tgui::Button>("componentPanelToggleButton")
 				->setText("<");
 			m_gui.get<tgui::ScrollablePanel>("componentPanel")
-				->setSize(50, "100%");
+				->setSize(70, "100%");
 		} else {
 			m_gui.get<tgui::Button>("componentPanelToggleButton")
 				->setText(">");
@@ -88,5 +88,24 @@ void GUIHolder::m_addComponentButton(const std::string & name,
 
 void GUIHolder::m_componentButtonSignal(const std::string & name) {
 	JSONHolder::get()["current"] = JSONHolder::get()["components/" + name];
+}
+
+void GUIHolder::createContextMenu(int x, int y) {
+	auto list = tgui::ListBox::create();
+	list->setPosition(x, y);
+	list->addItem("Move");
+	list->addItem("Edit");
+	list->addItem("Delete");
+	list->setSize(100, list->getItemHeight() * list->getItemCount() + 2);
+	list->connect("itemSelected", [&](std::string selected) {
+		if (selected != "") {
+			removeContextMenu();
+		}
+	});
+	m_gui.add(list, "contextMenu");
+}
+
+void GUIHolder::removeContextMenu() {
+	m_gui.remove(m_gui.get("contextMenu"));
 }
 

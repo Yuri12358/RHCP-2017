@@ -200,3 +200,9 @@ nlohmann::json * QuadTree::getPin(int x, int y) {
 	return pin;
 }
 
+std::string QuadTree::getComponentID(sf::Vector2f position) {
+	 int cellsize = JSONHolder::get()["settings"]["cellsize"];
+	 sf::Vector2i iPosition(position / float(cellsize));
+	 return m_getComponentID(iPosition.x, iPosition.y);
+}
+

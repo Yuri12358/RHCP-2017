@@ -17,6 +17,8 @@ class GUIHolder {
 public:
 	static GUIHolder & get();
 	tgui::Gui & gui();
+	void createContextMenu(int x, int y);
+	void removeContextMenu();
 };
 
 #endif // GUI_HOLDER_HPP

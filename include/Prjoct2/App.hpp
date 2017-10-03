@@ -8,6 +8,7 @@ class App {
 	App();
 	void m_handleEvents();
 	void m_handleMousePressEvent(const sf::Event::MouseButtonEvent & event);
+	void m_handleMouseReleaseEvent(const sf::Event::MouseButtonEvent & e);
 	void m_handleKeyEvent(const sf::Event::KeyEvent & event);
 	void m_render();
 	void m_renderComponents();
@@ -17,6 +18,7 @@ class App {
 	void m_selectPin(int pressX, int pressY);
 	void m_connectPins(nlohmann::json & pin1, nlohmann::json & pin2);
 	void m_disconnectPin(nlohmann::json & pin);
+	void m_createContextMenu(int x, int y);
 
 	static App * s_instance;
 	sf::RenderWindow m_window;
