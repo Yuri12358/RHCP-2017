@@ -46,7 +46,7 @@ void ComponentRenderer::drawCurrent() {
 	App::get().window().draw(shape);
 }
 
-void ComponentRenderer::m_drawConnection(nlohmann::json & pin) {
+void ComponentRenderer::m_drawWire(nlohmann::json & pin) {
 	int cellsize = JSONHolder::get()["settings"]["cellsize"];
 	sf::VertexArray wire(sf::LineStrip, 2);
 	std::string parentID = pin["parentID"];
@@ -95,7 +95,7 @@ void ComponentRenderer::m_drawPins(nlohmann::json & component) {
 				cellsize));
 			App::get().window().draw(pinShape);
 		} else if (pin["connection"]["rendered"].is_null()) {
-			m_drawConnection(pin);
+			m_drawWire(pin);
 		} else {
 			pin["connection"]["rendered"] = nlohmann::json();
 		}

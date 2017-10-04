@@ -42,3 +42,30 @@ nlohmann::json * ComponentInfo::getComponentPinAt(const std::string & id,
 	return getComponentPin(id, pinX, pinY);
 }
 
+Direction ComponentInfo::getPinOrientation(const nlohmann::json & pin) {
+	std::string parentID = pin["parentID"];
+	const nlohmann::json & parent = JSONHolder::get()["field"]["contents"]
+		[parentID];
+	int width = parent["width"];
+	int height = parent["height"];
+	Direction result = None;
+	int x = static_cast<int>(pin["x"]);
+	int y = static_cast<int>(pin["y"]);
+	if (x == 0) {
+		result = Direction(result | Left);
+	}
+	if (x == width) {
+		result = Direction(result | Right);
+	}
+	if (y == 0) {
+		result = Direction(result | Up);
+	}
+	if (y == height) {
+		result = Direction(result | Down);
+	}
+	if (result == None) {
+		result = All;
+	}
+	return result;
+}
+
