@@ -3,6 +3,7 @@
 #include<Prjoct2/GUIHolder.hpp>
 #include<Prjoct2/App.hpp>
 #include<functional>
+#include<iostream>
 
 GUIHolder * GUIHolder::s_instance = nullptr;
 
@@ -50,8 +51,13 @@ void GUIHolder::m_createComponentSelector() {
 		if (text == ">") {
 			m_gui.get<tgui::Button>("componentPanelToggleButton")
 				->setText("<");
+			int buttonSize = JSONHolder::get()["settings"]
+				["componentPanel"]["button"]["size"];
+			int spacing = JSONHolder::get()["settings"]
+				["componentPanel"]["spacing"];
 			m_gui.get<tgui::ScrollablePanel>("componentPanel")
-				->setSize(70, "100%");
+				->setSize(2 * spacing + buttonSize + 20,
+				"100%");
 		} else {
 			m_gui.get<tgui::Button>("componentPanelToggleButton")
 				->setText(">");
@@ -72,18 +78,26 @@ void GUIHolder::m_addComponentButton(const std::string & name,
 	if (JSONHolder::get()["components/" + name].is_null()) {
 		JSONHolder::get().fromFile("components/" + name);
 	}
+	int buttonSize = JSONHolder::get()["settings"]["componentPanel"]
+		["button"]["size"];
+	int buttonBorders = JSONHolder::get()["settings"]["componentPanel"]
+		["button"]["borders"];
+	int spacing = JSONHolder::get()["settings"]["componentPanel"]
+		["spacing"];
 	auto button = tgui::Button::create();
-	button->setSize(50, 50);
+	button->setSize(buttonSize, buttonSize);
 	button->getRenderer()->setTexture(TextureHolder::get()[textureName]);
-	button->getRenderer()->setBorders(tgui::Borders(5));
+	button->getRenderer()->setBorders(tgui::Borders(buttonBorders));
 	auto panel = m_gui.get<tgui::ScrollablePanel>("componentPanel");
 	int index = panel->getWidgets().size();
-	button->setPosition(0, 50 * index);
+	button->setPosition(spacing, buttonSize * index + spacing 
+		* (index + 1));
 	std::function<void(const std::string &)> signal = std::bind(&GUIHolder
 		::m_componentButtonSignal, this, name);
 	button->connect("pressed", signal);
 	panel->add(button);
-	panel->setContentSize(sf::Vector2f(50, 50 * (index + 1)));
+	panel->setContentSize(sf::Vector2f(spacing * 2 + buttonSize,
+		buttonSize * (index + 1) + spacing * (index + 2)));
 }
 
 void GUIHolder::m_componentButtonSignal(const std::string & name) {

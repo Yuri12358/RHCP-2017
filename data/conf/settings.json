@@ -1,4 +1,11 @@
 {
 	"cellsize": 20,
-	"default theme": "data/themes/TransparentGrey.txt"
+	"default theme": "data/themes/TransparentGrey.txt",
+	"componentPanel": {
+		"spacing": 10,
+		"button": {
+			"size": 50,
+			"borders": 5
+		}
+	}
 }
