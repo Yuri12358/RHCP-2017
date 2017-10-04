@@ -50,7 +50,8 @@ obj/JSONHolder.o: src/JSONHolder.cpp $(hdr)JSONHolder.hpp
 	g++ -c $< -Iinclude -o $@
 	g++ -c -g $< -Iinclude -o debug/$@
 
-obj/ComponentInfo.o: src/ComponentInfo.cpp $(hdr)ComponentInfo.hpp
+obj/ComponentInfo.o: src/ComponentInfo.cpp $(hdr)ComponentInfo.hpp \
+	obj/Direction.o
 	g++ -c $< -Iinclude -o $@
 	g++ -c -g $< -Iinclude -o debug/$@
 
@@ -70,6 +71,10 @@ obj/ComponentRenderer.o: src/ComponentRenderer.cpp $(hdr)ComponentRenderer.hpp \
 
 obj/GUIHolder.o: src/GUIHolder.cpp $(hdr)GUIHolder.hpp \
 	$(hdr)App.hpp
+	g++ -c $< -Iinclude -o $@
+	g++ -c -g $< -Iinclude -o debug/$@
+
+obj/Direction.o: src/Direction.cpp $(hdr)Direction.hpp
 	g++ -c $< -Iinclude -o $@
 	g++ -c -g $< -Iinclude -o debug/$@
 

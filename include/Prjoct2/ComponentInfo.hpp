@@ -1,21 +1,9 @@
 #ifndef COMPONENT_INFO_HPP
 #define COMPONENT_INFO_HPP
 
+#include<Prjoct2/Direction.hpp>
 #include<SFML/Graphics.hpp>
 #include<nlohmann/json.hpp>
-
-enum Direction {
-	None		= 0,
-	Up		= (1 << 0),
-	Right		= (1 << 1),
-	Down		= (1 << 2),
-	Left		= (1 << 3),
-	UpRight		= (Up | Right),
-	UpLeft		= (Up | Left),
-	DownRight	= (Down | Right),
-	DownLeft	= (Down | Left),
-	All		= (Up | Right | Down | Left)
-};
 
 class ComponentInfo {
 public:
