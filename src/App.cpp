@@ -57,18 +57,20 @@ void App::m_handleEvents() {
 
 void App::m_handleMouseReleaseEvent(const sf::Event::MouseButtonEvent & event) {
 	switch (event.button) {
+	case sf::Mouse::Left:
+		break;
 	case sf::Mouse::Right:
-		m_createContextMenu(event.x, event.y);
 		break;
 	}
 }
 
-void App::m_createContextMenu(int x, int y) {
+void App::m_selectComponent(int x, int y) {
 	sf::Vector2f mouse(mapToFieldCoords(sf::Vector2i(x, y)));
 	std::string id = QuadTree::get().getComponentID(mouse);
 	if (id == "") {
 		return;
 	}
+	JSONHolder::get()["selected component ID"] = id;
 	GUIHolder::get().createContextMenu(x, y);
 }
 
@@ -108,6 +110,9 @@ void App::m_handleMousePressEvent(const sf::Event::MouseButtonEvent & event) {
 			JSONHolder::get()["selected pin"] = nlohmann::json();
 			m_placeNewComponent(event.x, event.y);
 		}
+		break;
+	case sf::Mouse::Right:
+		m_selectComponent(event.x, event.y);
 		break;
 	}
 }
@@ -222,5 +227,18 @@ void App::m_connectPins(nlohmann::json & pin1, nlohmann::json & pin2) {
 
 sf::Vector2f App::mapToFieldCoords(sf::Vector2i pixel) {
 	return m_window.mapPixelToCoords(pixel, m_fieldView);
+}
+
+void App::deleteSelectedComponent() {
+	std::string id = JSONHolder::get()["selected component ID"];
+	if (id == "") {
+		return;
+	}
+	nlohmann::json & component = JSONHolder::get()["field"]["contents"][id];
+	for (nlohmann::json & pin : component["pins"]) {
+		m_disconnectPin(pin);
+	}
+	JSONHolder::get()["field"]["contents"].erase(id);
+	JSONHolder::get()["selected component ID"] = nlohmann::json();
 }
 

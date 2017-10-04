@@ -18,7 +18,7 @@ class App {
 	void m_selectPin(int pressX, int pressY);
 	void m_connectPins(nlohmann::json & pin1, nlohmann::json & pin2);
 	void m_disconnectPin(nlohmann::json & pin);
-	void m_createContextMenu(int x, int y);
+	void m_selectComponent(int x, int y);
 
 	static App * s_instance;
 	sf::RenderWindow m_window;
@@ -32,6 +32,7 @@ public:
 	void resetView();
 	sf::RenderWindow & window();
 	sf::Vector2f mapToFieldCoords(sf::Vector2i pixel);
+	void deleteSelectedComponent();
 };
 
 #endif // APP_HPP

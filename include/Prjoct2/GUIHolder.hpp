@@ -9,6 +9,7 @@ class GUIHolder {
 	void m_addComponentButton(const std::string & name,
 		const std::string & textureName = "");
 	void m_componentButtonSignal(const std::string & name);
+	void m_contextMenuSignal(const std::string & selectedItem);
 
 	static GUIHolder * s_instance;
 	tgui::Gui m_gui;

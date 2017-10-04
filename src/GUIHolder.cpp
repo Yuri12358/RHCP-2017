@@ -111,12 +111,20 @@ void GUIHolder::createContextMenu(int x, int y) {
 	list->addItem("Edit");
 	list->addItem("Delete");
 	list->setSize(100, list->getItemHeight() * list->getItemCount() + 2);
-	list->connect("itemSelected", [&](std::string selected) {
-		if (selected != "") {
-			removeContextMenu();
-		}
-	});
+	std::function<void(const std::string &)> signal = std::bind(&GUIHolder
+		::m_contextMenuSignal, this, std::placeholders::_1);
+	list->connect("itemSelected", signal);
 	m_gui.add(list, "contextMenu");
+}
+
+void GUIHolder::m_contextMenuSignal(const std::string & item) {
+	if (item == "") {
+		return;
+	}
+	removeContextMenu();
+	if (item == "Delete") {
+		App::get().deleteSelectedComponent();
+	}
 }
 
 void GUIHolder::removeContextMenu() {
