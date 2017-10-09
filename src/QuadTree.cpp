@@ -113,7 +113,7 @@ QuadTree & QuadTree::get() {
 }
 
 void QuadTree::addObject(const std::string & id) {
-	if (JSONHolder::get()["field"]["contents"][id].is_null()) {
+	if (JSONHolder::get()["components"][id].is_null()) {
 		return;
 	}
 	auto rect = ComponentInfo::getRect(id);

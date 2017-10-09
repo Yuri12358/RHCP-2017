@@ -9,14 +9,14 @@ void print(nlohmann::json & json) {
 
 nlohmann::json * getParent(nlohmann::json & pin) {
 	if (pin.count("parentID") == 1) {
-		return &JSONHolder::get()["field"]["contents"]
+		return &JSONHolder::get()["components"]
 			[pin["parentID"].get<std::string>()];
 	}
 	return nullptr;
 }
 
 void printField() {
-	std::cout << std::setw(4) << JSONHolder::get()["field"]["contents"]
+	std::cout << std::setw(4) << JSONHolder::get()["components"]
 		<< std::endl;
 }
 

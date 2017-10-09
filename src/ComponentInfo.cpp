@@ -10,15 +10,14 @@ sf::IntRect ComponentInfo::getRect(const nlohmann::json & component) {
 }
 
 sf::IntRect ComponentInfo::getRect(const std::string & id) {
-	nlohmann::json & component(JSONHolder::get()["field"]["contents"][id]);
+	nlohmann::json & component(JSONHolder::get()["components"][id]);
 	return getRect(component);
 }
 
 nlohmann::json * ComponentInfo::getComponentPin(const std::string & id,
 	int pinX, int pinY) {
-	nlohmann::json::iterator it = JSONHolder::get()["field"]["contents"]
-		.find(id);
-	if (it == JSONHolder::get()["field"]["contents"].end()) {
+	nlohmann::json::iterator it = JSONHolder::get()["components"].find(id);
+	if (it == JSONHolder::get()["components"].end()) {
 		return nullptr;
 	}
 	std::string type = (*it)["type"];
@@ -48,9 +47,9 @@ nlohmann::json * ComponentInfo::getComponentPin(const std::string & id,
 
 nlohmann::json * ComponentInfo::getComponentPinAt(const std::string & id,
 	int x, int y) {
-	nlohmann::json::iterator it = JSONHolder::get()["field"]["contents"]
+	nlohmann::json::iterator it = JSONHolder::get()["components"]
 		.find(id);
-	if (it == JSONHolder::get()["field"]["contents"].end()) {
+	if (it == JSONHolder::get()["components"].end()) {
 		return nullptr;
 	}
 	int pinX = x - static_cast<int>((*it)["position"]["x"]);
@@ -60,7 +59,7 @@ nlohmann::json * ComponentInfo::getComponentPinAt(const std::string & id,
 
 Direction ComponentInfo::getPinOrientation(const nlohmann::json & pin) {
 	std::string parentID = pin["parentID"];
-	const nlohmann::json & parent = JSONHolder::get()["field"]["contents"]
+	const nlohmann::json & parent = JSONHolder::get()["components"]
 		[parentID];
 	int width = parent["width"];
 	int height = parent["height"];

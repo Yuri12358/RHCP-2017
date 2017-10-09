@@ -77,7 +77,7 @@ void App::m_selectComponent(int x, int y) {
 void App::m_placeNewComponent(int pressX, int pressY) {
 	auto idString = std::to_string(m_nextComponentID);
 	auto & component 
-		= JSONHolder::get()["field"]["contents"][idString];
+		= JSONHolder::get()["components"][idString];
 	component = JSONHolder::get()["current"];
 	component["id"] = m_nextComponentID;
 	int cellsize = JSONHolder::get()["settings"]["cellsize"];
@@ -99,7 +99,7 @@ void App::m_placeNewComponent(int pressX, int pressY) {
 		++m_nextComponentID;
 		JSONHolder::get()["current"] = nlohmann::json();
 	} else {
-		JSONHolder::get()["field"]["contents"].erase(idString);
+		JSONHolder::get()["components"].erase(idString);
 	}
 }
 
@@ -133,7 +133,7 @@ void App::m_handleKeyEvent(const sf::Event::KeyEvent & event) {
 	case sf::Keyboard::D:
 		std::cout << "++++++++++++++++++++++++++++++++++++++++++\n"
 			<< std::setw(4) 
-			<< JSONHolder::get()["field"]["contents"] << std::endl
+			<< JSONHolder::get()["components"] << std::endl
 			<< "###########################################\n";
 		break;
 	case sf::Keyboard::P:
@@ -173,7 +173,7 @@ void App::m_updateFieldView() {
 }
 
 void App::m_renderComponents() {
-	for (auto component : JSONHolder::get()["field"]["contents"]) {
+	for (auto component : JSONHolder::get()["components"]) {
 		ComponentRenderer::get().drawComponent(component);
 	}
 }
@@ -211,11 +211,11 @@ void App::m_selectPin(int pressX, int pressY) {
 			if (selectedPin.count("temporary") == 1) {
 				std::string id = selectedPin["id"];
 				std::string parentID = selectedPin["parentID"];
-				selectedPinPtr = &JSONHolder::get()["field"]
-					["contents"][parentID]["pins"][id];
+				selectedPinPtr = &JSONHolder::get()
+					["components"][parentID]["pins"][id];
 			} else {
-				selectedPinPtr = ComponentInfo
-					::getComponentPin(selectedPin["parentID"],
+				selectedPinPtr = ComponentInfo::getComponentPin(
+					selectedPin["parentID"],
 					selectedPin["x"], selectedPin["y"]);
 				m_disconnectPin(*selectedPinPtr);
 			}
@@ -231,7 +231,7 @@ void App::m_deselectPin() {
 	nlohmann::json & selected = JSONHolder::get()["selected pin"];
 	if (!selected.is_null() && selected.count("temporary") == 1) {
 		std::string parentID = selected["parentID"];
-		nlohmann::json & parent = JSONHolder::get()["field"]["contents"]
+		nlohmann::json & parent = JSONHolder::get()["components"]
 			[parentID];
 		std::string id = selected["id"];
 		parent["pins"].erase(id);
@@ -249,7 +249,7 @@ void App::m_disconnectPin(nlohmann::json & pin) {
 	if (pin["connection"].count("id") == 1) {
 		std::string otherParentID = pin["connection"]["parentID"];
 		std::string otherID = pin["connection"]["id"];
-		JSONHolder::get()["field"]["contents"][otherParentID]["pins"]
+		JSONHolder::get()["components"][otherParentID]["pins"]
 			.erase(otherID);
 	} else {
 		nlohmann::json & other = *(ComponentInfo::getComponentPin(
@@ -260,7 +260,7 @@ void App::m_disconnectPin(nlohmann::json & pin) {
 	if (pin.count("temporary") == 1) {
 		std::string parentID = pin["parentID"];
 		std::string id = pin["id"];
-		JSONHolder::get()["field"]["contents"][parentID]["pins"]
+		JSONHolder::get()["components"][parentID]["pins"]
 			.erase(id);
 	} else {
 		pin["connection"] = nlohmann::json();
@@ -286,11 +286,11 @@ void App::deleteSelectedComponent() {
 	if (id == "") {
 		return;
 	}
-	nlohmann::json & component = JSONHolder::get()["field"]["contents"][id];
+	nlohmann::json & component = JSONHolder::get()["components"][id];
 	for (nlohmann::json & pin : component["pins"]) {
 		m_disconnectPin(pin);
 	}
-	JSONHolder::get()["field"]["contents"].erase(id);
+	JSONHolder::get()["components"].erase(id);
 	JSONHolder::get()["selected component ID"] = nlohmann::json();
 }
 

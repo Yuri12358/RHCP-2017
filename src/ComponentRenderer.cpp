@@ -52,7 +52,7 @@ void ComponentRenderer::m_drawWire(nlohmann::json & pin) {
 	sf::VertexArray wire(sf::LineStrip, 4);
 	std::string parentID = pin["parentID"];
 
-	nlohmann::json & parent = JSONHolder::get()["field"]["contents"]
+	nlohmann::json & parent = JSONHolder::get()["components"]
 		[parentID];
 
 	sf::Vector2f pos = sf::Vector2f(static_cast<int>(parent["position"]
@@ -64,12 +64,12 @@ void ComponentRenderer::m_drawWire(nlohmann::json & pin) {
 	nlohmann::json & conn = pin["connection"];
 	std::string otherParentID = conn["parentID"];
 	
-	nlohmann::json & other = JSONHolder::get()["field"]["contents"]
+	nlohmann::json & other = JSONHolder::get()["components"]
 		[otherParentID];
 	
 	nlohmann::json * otherPinPtr = nullptr;
 	if (conn.count("id") == 1) {
-		otherPinPtr = &JSONHolder::get()["field"]["contents"]
+		otherPinPtr = &JSONHolder::get()["components"]
 			[conn["parentID"].get<std::string>()]["pins"]
 			[conn["id"].get<std::string>()];
 	} else {
@@ -83,7 +83,8 @@ void ComponentRenderer::m_drawWire(nlohmann::json & pin) {
 	
 	// There will be a lot of "if's"
 	
-	Direction dir1 = ComponentInfo::getPinOrientation(pin), dir2 = ComponentInfo::getPinOrientation(otherPin);
+	Direction dir1 = ComponentInfo::getPinOrientation(pin);
+	Direction dir2 = ComponentInfo::getPinOrientation(otherPin);
 
 	if((dir1 & (Left | Right)) && (dir1 & getOppositeDirection(dir2))) {
 		sf::Vector2f left = otherPos, right = pos;
@@ -92,65 +93,64 @@ void ComponentRenderer::m_drawWire(nlohmann::json & pin) {
 			right = otherPos;
 		}
 		if ((left.x - right.x) > 0) {
-			wire[1].position = sf::Vector2f((pos.x + otherPos.x) / 2, pos.y) * float(cellsize);
-			wire[2].position = sf::Vector2f((pos.x + otherPos.x) / 2, otherPos.y) * float(cellsize);
+			wire[1].position = sf::Vector2f((pos.x + otherPos.x)
+				/ 2, pos.y) * float(cellsize);
+			wire[2].position = sf::Vector2f((pos.x + otherPos.x)
+				/ 2, otherPos.y) * float(cellsize);
 		} else {
-			wire[1].position = sf::Vector2f(pos.x, (pos.y + otherPos.y) / 2) * float(cellsize);
-			wire[2].position = sf::Vector2f(otherPos.x, (pos.y + otherPos.y) / 2) * float(cellsize);
+			wire[1].position = sf::Vector2f(pos.x, (pos.y
+				+ otherPos.y) / 2) * float(cellsize);
+			wire[2].position = sf::Vector2f(otherPos.x, (pos.y
+				+ otherPos.y) / 2) * float(cellsize);
 		}
-	}
-	else if((dir1 & (Up | Down)) && (dir1 & getOppositeDirection(dir2))) {
+	} else if ((dir1 & (Up | Down)) && (dir1 & getOppositeDirection(
+		dir2))) {
 		sf::Vector2f up = otherPos, down = pos;
-		if((dir1 & Up) && !(dir2 & Up)) {
+		if ((dir1 & Up) && !(dir2 & Up)) {
 			up = pos;
 			down = otherPos;
 		}
-		if((up.y - down.y) > 0) {
-			wire[1].position = sf::Vector2f(pos.x, (pos.y + otherPos.y) / 2) * float(cellsize);
-			wire[2].position = sf::Vector2f(otherPos.x, (pos.y + otherPos.y) / 2) * float(cellsize);
+		if ((up.y - down.y) > 0) {
+			wire[1].position = sf::Vector2f(pos.x, (pos.y 
+				+ otherPos.y) / 2) * float(cellsize);
+			wire[2].position = sf::Vector2f(otherPos.x, (pos.y
+				+ otherPos.y) / 2) * float(cellsize);
 		} else {
-			wire[1].position = sf::Vector2f((pos.x + otherPos.x) / 2, pos.y) * float(cellsize);
-			wire[2].position = sf::Vector2f((pos.x + otherPos.x) / 2, otherPos.y) * float(cellsize);
+			wire[1].position = sf::Vector2f((pos.x + otherPos.x)
+				/ 2, pos.y) * float(cellsize);
+			wire[2].position = sf::Vector2f((pos.x + otherPos.x)
+				/ 2, otherPos.y) * float(cellsize);
 		}
-	}
-	else if((dir1 & (Left | Right)) && (dir1 & dir2))
-	{
+	} else if ((dir1 & (Left | Right)) && (dir1 & dir2)) {
 		sf::Vector2f left = otherPos, right = pos;
-		if((dir1 & Right))
-		{
+		if ((dir1 & Right)) {
 			left = pos;
 			right = otherPos;
 		}
-		if((right.x - left.x) > 0)
-		{
-			wire[1].position = wire[2].position = sf::Vector2f(otherPos.x, pos.y) * float(cellsize);
+		if ((right.x - left.x) > 0) {
+			wire[1].position = wire[2].position = sf::Vector2f(
+				otherPos.x, pos.y) * float(cellsize);
+		} else {
+			wire[1].position = wire[2].position = sf::Vector2f(
+				pos.x, otherPos.y) * float(cellsize);
 		}
-		else
-		{
-			wire[1].position = wire[2].position = sf::Vector2f(pos.x, otherPos.y) * float(cellsize);
-		}
-	}
-	else if((dir1 & (Up | Down)) && (dir1 & dir2))
-	{
+	} else if ((dir1 & (Up | Down)) && (dir1 & dir2)) {
 		sf::Vector2f up = otherPos, down = pos;
-		if((dir1 & Down))
-		{
+		if ((dir1 & Down)) {
 			up = pos;
 			down = otherPos;
 		}
-		if((up.x - down.x) > 0)
-		{
-			wire[1].position = wire[2].position = sf::Vector2f(pos.x, otherPos.y) * float(cellsize);
-		}
-		else
-		{
-			wire[1].position = wire[2].position = sf::Vector2f(otherPos.x, pos.y) * float(cellsize);
+		if ((up.x - down.x) > 0) {
+			wire[1].position = wire[2].position = sf::Vector2f(
+				pos.x, otherPos.y) * float(cellsize);
+		} else {
+			wire[1].position = wire[2].position = sf::Vector2f(
+				otherPos.x, pos.y) * float(cellsize);
 		}
 	}
 
 	wire[3].position = otherPos * float(cellsize);
 	
-	wire[0].color = wire[1].color = wire[2].color = wire[3].color = sf::Color::Black;
 	otherPin["connection"]["rendered"] = true;
 	App::get().window().draw(wire);
 }
