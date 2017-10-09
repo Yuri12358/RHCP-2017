@@ -78,6 +78,10 @@ obj/Direction.o: src/Direction.cpp $(hdr)Direction.hpp
 	g++ -c $< -Iinclude -o $@
 	g++ -c -g $< -Iinclude -o debug/$@
 
+obj/Debug.o: src/Debug.cpp $(hdr)Debug.hpp
+	g++ -c $< -Iinclude -o $@
+	g++ -c -g $< -Iinclude -o debug/$@
+
 clear:
 	-rm bin/* obj/* debug/bin/* debug/obj/*
 
