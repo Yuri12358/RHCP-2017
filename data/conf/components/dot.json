@@ -1,0 +1,14 @@
+{
+	"type": "dot",
+	"width": 2,
+	"height": 2,
+	"texture": "dot_medium",
+	"next pin ID": 0,
+	"pin pattern": {
+		"temporary": true,
+		"x": 1,
+		"y": 1
+	},
+	"pins": {}
+}
+
