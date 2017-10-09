@@ -1,6 +1,7 @@
 #ifndef APP_HPP
 #define APP_HPP
 
+#include<Prjoct2/Debug.hpp>
 #include<SFML/Graphics.hpp>
 #include<nlohmann/json.hpp>
 
@@ -15,6 +16,7 @@ class App {
 	void m_update();
 	void m_updateFieldView();
 	void m_placeNewComponent(int pressX, int pressY);
+	void m_deselectPin();
 	void m_selectPin(int pressX, int pressY);
 	void m_connectPins(nlohmann::json & pin1, nlohmann::json & pin2);
 	void m_disconnectPin(nlohmann::json & pin);

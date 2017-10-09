@@ -87,8 +87,11 @@ void App::m_placeNewComponent(int pressX, int pressY) {
 		{"x", mouse.x / cellsize},
 		{"y", mouse.y / cellsize}
 	};
-	for (nlohmann::json & pin : component["pins"]) {
-		pin["parentID"] = idString;
+	std::string currentType = component["type"];
+	if (currentType != "dot") {
+		for (nlohmann::json & pin : component["pins"]) {
+			pin["parentID"] = idString;
+		}
 	}
 	auto rect = ComponentInfo::getRect(idString);
 	if (QuadTree::get().intersects(rect) == "") {
@@ -107,7 +110,7 @@ void App::m_handleMousePressEvent(const sf::Event::MouseButtonEvent & event) {
 		if (JSONHolder::get()["current"].is_null()) {
 			m_selectPin(event.x, event.y);
 		} else {
-			JSONHolder::get()["selected pin"] = nlohmann::json();
+			m_deselectPin();
 			m_placeNewComponent(event.x, event.y);
 		}
 		break;
@@ -128,8 +131,15 @@ void App::m_handleKeyEvent(const sf::Event::KeyEvent & event) {
 			= JSONHolder::get()["components/lamp"];
 		break;
 	case sf::Keyboard::D:
-		std::cout << std::setw(4) 
-			<< JSONHolder::get()["field"]["contents"] << std::endl;
+		std::cout << "++++++++++++++++++++++++++++++++++++++++++\n"
+			<< std::setw(4) 
+			<< JSONHolder::get()["field"]["contents"] << std::endl
+			<< "###########################################\n";
+		break;
+	case sf::Keyboard::P:
+		std::cout << std::setw(4)
+			<< JSONHolder::get()["selected pin"] << std::endl;
+		break;
 	}
 }
 
@@ -188,18 +198,28 @@ void App::m_selectPin(int pressX, int pressY) {
 	auto pinPtr = QuadTree::get().getPin(mouse.x, mouse.y);
 	nlohmann::json & selectedPin = JSONHolder::get()["selected pin"];
 	if (pinPtr == nullptr) {
-		selectedPin = nlohmann::json();
+		m_deselectPin();
 	} else if (selectedPin.is_null()) {
+		m_deselectPin();
 		selectedPin = *pinPtr;
 	} else {
 		if ((*pinPtr)["parentID"] == selectedPin["parentID"]) {
+			m_deselectPin();
 			selectedPin = *pinPtr;
 		} else {
-			nlohmann::json * selectedPinPtr = ComponentInfo
-				::getComponentPin(selectedPin["parentID"],
-				selectedPin["x"], selectedPin["y"]);
+			nlohmann::json * selectedPinPtr;
+			if (selectedPin.count("temporary") == 1) {
+				std::string id = selectedPin["id"];
+				std::string parentID = selectedPin["parentID"];
+				selectedPinPtr = &JSONHolder::get()["field"]
+					["contents"][parentID]["pins"][id];
+			} else {
+				selectedPinPtr = ComponentInfo
+					::getComponentPin(selectedPin["parentID"],
+					selectedPin["x"], selectedPin["y"]);
+				m_disconnectPin(*selectedPinPtr);
+			}
 			m_disconnectPin(*pinPtr);
-			m_disconnectPin(*selectedPinPtr);
 			m_connectPins(*pinPtr, *selectedPinPtr);	
 			m_connectPins(*selectedPinPtr, *pinPtr);
 			selectedPin = nlohmann::json();
@@ -207,15 +227,44 @@ void App::m_selectPin(int pressX, int pressY) {
 	}
 }
 
+void App::m_deselectPin() {
+	nlohmann::json & selected = JSONHolder::get()["selected pin"];
+	if (!selected.is_null() && selected.count("temporary") == 1) {
+		std::string parentID = selected["parentID"];
+		nlohmann::json & parent = JSONHolder::get()["field"]["contents"]
+			[parentID];
+		std::string id = selected["id"];
+		parent["pins"].erase(id);
+	}
+	selected = nlohmann::json();
+}
+
 void App::m_disconnectPin(nlohmann::json & pin) {
 	if (pin["connection"].is_null()) {
 		return;
 	}
-	nlohmann::json & other = *(ComponentInfo::getComponentPin(
-		pin["connection"]["parentID"], pin["connection"]["x"],
-		pin["connection"]["y"]));
-	pin["connection"] = nlohmann::json();
-	other["connection"] = nlohmann::json();
+	std::cout << "+++++++++++++++++++++++++++++++++++++\n"
+		<< std::setw(4) << pin << std::endl 
+		<< "########################################\n";
+	if (pin["connection"].count("id") == 1) {
+		std::string otherParentID = pin["connection"]["parentID"];
+		std::string otherID = pin["connection"]["id"];
+		JSONHolder::get()["field"]["contents"][otherParentID]["pins"]
+			.erase(otherID);
+	} else {
+		nlohmann::json & other = *(ComponentInfo::getComponentPin(
+			pin["connection"]["parentID"], pin["connection"]["x"],
+			pin["connection"]["y"]));
+		other["connection"] = nlohmann::json();
+	}
+	if (pin.count("temporary") == 1) {
+		std::string parentID = pin["parentID"];
+		std::string id = pin["id"];
+		JSONHolder::get()["field"]["contents"][parentID]["pins"]
+			.erase(id);
+	} else {
+		pin["connection"] = nlohmann::json();
+	}
 }
 
 void App::m_connectPins(nlohmann::json & pin1, nlohmann::json & pin2) {
@@ -223,6 +272,9 @@ void App::m_connectPins(nlohmann::json & pin1, nlohmann::json & pin2) {
 	connection["parentID"] = pin2["parentID"];
 	connection["x"] = pin2["x"];
 	connection["y"] = pin2["y"];
+	if (pin2.count("temporary") == 1) {
+		connection["id"] = pin2["id"];
+	}
 }
 
 sf::Vector2f App::mapToFieldCoords(sf::Vector2i pixel) {

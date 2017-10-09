@@ -67,8 +67,16 @@ void ComponentRenderer::m_drawWire(nlohmann::json & pin) {
 	nlohmann::json & other = JSONHolder::get()["field"]["contents"]
 		[otherParentID];
 	
-	nlohmann::json & otherPin = *(ComponentInfo::getComponentPin(
-		conn["parentID"], conn["x"], conn["y"]));
+	nlohmann::json * otherPinPtr = nullptr;
+	if (conn.count("id") == 1) {
+		otherPinPtr = &JSONHolder::get()["field"]["contents"]
+			[conn["parentID"].get<std::string>()]["pins"]
+			[conn["id"].get<std::string>()];
+	} else {
+		otherPinPtr = ComponentInfo::getComponentPin(
+			conn["parentID"], conn["x"], conn["y"]);
+	}
+	nlohmann::json & otherPin = *otherPinPtr;
 	sf::Vector2f otherPos = sf::Vector2f(static_cast<int>(other["position"]
 		["x"]) + static_cast<int>(otherPin["x"]), static_cast<int>(other
 		["position"]["y"]) + static_cast<int>(otherPin["y"]));

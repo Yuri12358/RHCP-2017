@@ -21,10 +21,26 @@ nlohmann::json * ComponentInfo::getComponentPin(const std::string & id,
 	if (it == JSONHolder::get()["field"]["contents"].end()) {
 		return nullptr;
 	}
-	for (nlohmann::json & pin : (*it)["pins"]) {
-		if (pinX == static_cast<int>(pin["x"])
-			&& pinY == static_cast<int>(pin["y"])) {
+	std::string type = (*it)["type"];
+	if (type == "dot") {
+		nlohmann::json & pinPattern = (*it)["pin pattern"];
+		if (pinX == static_cast<int>(pinPattern["x"])
+			&& pinY == static_cast<int>(pinPattern["y"])) {
+			int nextPinID = (*it)["next pin ID"];
+			(*it)["next pin ID"] = nextPinID + 1;
+			std::string strID(std::to_string(nextPinID));
+			nlohmann::json & pin = (*it)["pins"][strID];
+			pin = pinPattern;
+			pin["parentID"] = id;
+			pin["id"] = strID;
 			return &pin;
+		}
+	} else {
+		for (nlohmann::json & pin : (*it)["pins"]) {
+			if (pinX == static_cast<int>(pin["x"])
+				&& pinY == static_cast<int>(pin["y"])) {
+				return &pin;
+			}
 		}
 	}
 	return nullptr;

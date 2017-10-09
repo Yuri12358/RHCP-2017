@@ -14,6 +14,7 @@ GUIHolder::GUIHolder()
 	m_theme.load(defaultThemePath);
 	tgui::Theme::setDefault(&m_theme);
 	m_createComponentSelector();
+	m_addComponentButton("dot", "dot_medium");
 	m_addComponentButton("lamp");
 	m_addComponentButton("battery");
 	m_addComponentButton("resistor");
