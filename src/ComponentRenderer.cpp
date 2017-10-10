@@ -148,9 +148,17 @@ void ComponentRenderer::m_drawWire(nlohmann::json & pin) {
 				otherPos.x, pos.y) * float(cellsize);
 		}
 	}
+//	else if((dir1 & (Up | Down)) && (dir2 & (Left | Right)))
+//	{
+//		if(pos.x - otherPos.x > 0)
+//		{
+//			wire[1]
+//		}
+//	}
 
 	wire[3].position = otherPos * float(cellsize);
-	
+	wire[0].color = wire[1].color = wire[2].color = wire[3].color
+		= sf::Color::Black;
 	otherPin["connection"]["rendered"] = true;
 	App::get().window().draw(wire);
 }
