@@ -335,6 +335,6 @@ void App::moveSelectedComponent() {
 	nlohmann::json & component = JSONHolder::get()["components"][id];
 	component["moving"] = true;
 	JSONHolder::get()["moving ID"] = id;
-	//QuadTree::get().removeObject(id);
+	QuadTree::get().removeObject(id);
 }
 
