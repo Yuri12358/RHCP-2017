@@ -1,11 +1,32 @@
 {
 	"cellsize": 20,
 	"default theme": "data/themes/TransparentGrey.txt",
+	"window": {
+		"width": 800,
+		"height": 600,
+		"title": "Test",
+		"fullscreen": true
+	},
 	"componentPanel": {
 		"spacing": 10,
 		"button": {
 			"size": 50,
 			"borders": 5
 		}
-	}
+	},
+	"components": [
+		{"name": "dot"},
+		{"name": "lamp"},
+		{"name": "battery"},
+		{"name": "resistor"},
+		{"name": "switch"},
+		{"name": "transistor"},
+		{"name": "rheostat"},
+		{"name": "bell"},
+		{"name": "ampermeter"},
+		{"name": "voltmeter"},
+		{"name": "diode"},
+		{"name": "electromagnet"},
+		{"name": "fuse"}
+	]
 }

@@ -11,7 +11,14 @@
 App * App::s_instance = nullptr;
 
 App::App()
-	: m_window(sf::VideoMode(800, 600), "TUI")
+	: m_window(sf::VideoMode(
+		JSONHolder::get()["settings"]["window"]["width"].get<int>(),
+		JSONHolder::get()["settings"]["window"]["height"].get<int>()),
+		JSONHolder::get()["settings"]["window"]["title"]
+			.get<std::string>(),
+		JSONHolder::get()["settings"]["window"]["fullscreen"]
+			.get<bool>() ? sf::Style::Fullscreen 
+			: sf::Style::Default)
 	, m_nextComponentID()
 	, m_fieldView(sf::FloatRect(0, 0, m_window.getSize().x,
 		m_window.getSize().y)) {

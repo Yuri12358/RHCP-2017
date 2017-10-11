@@ -14,19 +14,6 @@ GUIHolder::GUIHolder()
 	m_theme.load(defaultThemePath);
 	tgui::Theme::setDefault(&m_theme);
 	m_createComponentSelector();
-	m_addComponentButton("dot", "dot_medium");
-	m_addComponentButton("lamp");
-	m_addComponentButton("battery");
-	m_addComponentButton("resistor");
-	m_addComponentButton("switch");
-	m_addComponentButton("transistor");
-	m_addComponentButton("rheostat");
-	m_addComponentButton("bell");
-	m_addComponentButton("ampermeter");
-	m_addComponentButton("voltmeter");
-	m_addComponentButton("diode");
-	m_addComponentButton("electromagnet");
-	m_addComponentButton("fuse");
 }
 
 GUIHolder & GUIHolder::get() {
@@ -66,18 +53,32 @@ void GUIHolder::m_createComponentSelector() {
 				->setSize(0, "100%");
 		}
 	});
+	m_createComponentButtons();
+}
+
+void GUIHolder::m_createComponentButtons() {
+	for (nlohmann::json & entry : JSONHolder::get()["settings"]
+		["components"]) {
+		std::string name = entry["name"];
+		if (entry.count("texture") == 1) {
+			m_addComponentButton(name, entry["texture"]
+				.get<std::string>());
+		} else {
+			m_addComponentButton(name);
+		}
+	}
 }
 
 void GUIHolder::m_addComponentButton(const std::string & name,
 	const std::string & requestedTextureName) {
-	std::string textureName;
-	if (requestedTextureName == "") {
-		textureName = name;
-	} else {
-		textureName = requestedTextureName;
-	}
 	if (JSONHolder::get()["components/" + name].is_null()) {
 		JSONHolder::get().fromFile("components/" + name);
+	}
+	std::string textureName;
+	if (requestedTextureName != "") {
+		textureName = requestedTextureName;
+	} else {
+		textureName = JSONHolder::get()["components/" + name]["texture"];
 	}
 	int buttonSize = JSONHolder::get()["settings"]["componentPanel"]
 		["button"]["size"];

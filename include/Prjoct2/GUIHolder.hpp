@@ -6,6 +6,7 @@
 class GUIHolder {
 	GUIHolder();
 	void m_createComponentSelector();
+	void m_createComponentButtons();
 	void m_addComponentButton(const std::string & name,
 		const std::string & textureName = "");
 	void m_componentButtonSignal(const std::string & name);
