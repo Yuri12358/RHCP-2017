@@ -11,18 +11,25 @@ class App {
 	void m_handleMousePressEvent(const sf::Event::MouseButtonEvent & event);
 	void m_handleMouseReleaseEvent(const sf::Event::MouseButtonEvent & e);
 	void m_handleKeyEvent(const sf::Event::KeyEvent & event);
+	
 	void m_render();
 	void m_renderComponents();
+
 	void m_update();
 	void m_updateFieldView();
 	void m_updateMovingComponent();
+
 	void m_placeNewComponent(int pressX, int pressY);
 	void m_placeMovingComponent(int pressX, int pressY);
-	void m_deselectPin();
+
 	void m_selectPin(int pressX, int pressY);
-	void m_connectPins(nlohmann::json & pin1, nlohmann::json & pin2);
-	void m_disconnectPin(nlohmann::json & pin);
 	void m_selectComponent(int x, int y);
+
+	void m_deselectPin();
+
+	void m_connectPins(nlohmann::json & pin1, nlohmann::json & pin2);
+
+	void m_disconnectPin(nlohmann::json & pin);
 
 	static App * s_instance;
 	sf::RenderWindow m_window;
@@ -38,6 +45,7 @@ public:
 	sf::Vector2f mapToFieldCoords(sf::Vector2i pixel);
 	void deleteSelectedComponent();
 	void moveSelectedComponent();
+	void cancelMovingComponent();
 };
 
 #endif // APP_HPP

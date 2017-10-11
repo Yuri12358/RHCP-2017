@@ -101,7 +101,7 @@ void App::m_placeNewComponent(int pressX, int pressY) {
 }
 
 void App::m_placeMovingComponent(int pressX, int pressY) {
-	std::string id = JSONHolder::get()["moving ID"];
+	std::string id = JSONHolder::get()["moving"]["id"];
 	nlohmann::json & component = JSONHolder::get()["components"][id];
 	int cellsize = JSONHolder::get()["settings"]["cellsize"];
 	sf::Vector2i mouse(mapToFieldCoords(sf::Vector2i(pressX, pressY))
@@ -111,7 +111,7 @@ void App::m_placeMovingComponent(int pressX, int pressY) {
 	auto rect = ComponentInfo::getRect(component);
 	if (QuadTree::get().intersects(rect) == "") {
 		component.erase("moving");
-		JSONHolder::get()["moving ID"] = nlohmann::json();
+		JSONHolder::get()["moving"] = nlohmann::json();
 		QuadTree::get().addObject(id);
 	}
 }
@@ -120,7 +120,7 @@ void App::m_handleMousePressEvent(const sf::Event::MouseButtonEvent & event) {
 	GUIHolder::get().removeContextMenu();
 	switch (event.button) {
 	case sf::Mouse::Left:
-		if (!JSONHolder::get()["moving ID"].is_null()) {
+		if (!JSONHolder::get()["moving"].is_null()) {
 			m_placeMovingComponent(event.x, event.y);
 		} else if (JSONHolder::get()["current"].is_null()) {
 			m_selectPin(event.x, event.y);
@@ -130,7 +130,9 @@ void App::m_handleMousePressEvent(const sf::Event::MouseButtonEvent & event) {
 		}
 		break;
 	case sf::Mouse::Right:
-		m_selectComponent(event.x, event.y);
+		if (JSONHolder::get()["moving"].is_null()) {
+			m_selectComponent(event.x, event.y);
+		}
 		break;
 	}
 }
@@ -139,7 +141,16 @@ void App::m_handleKeyEvent(const sf::Event::KeyEvent & event) {
 	GUIHolder::get().removeContextMenu();
 	switch (event.code) {
 	case sf::Keyboard::Escape:
-		m_window.close();
+		std::cout << "Escape\n";
+		if (!JSONHolder::get()["current"].is_null()) {
+			JSONHolder::get()["current"] = nlohmann::json();
+		} else if (!JSONHolder::get()["moving"].is_null()) {
+			cancelMovingComponent();
+		} else if (!JSONHolder::get()["selected pin"].is_null()) {
+			m_deselectPin();
+		} else {
+			m_window.close();
+		}
 		break;
 	case sf::Keyboard::Space:
 		JSONHolder::get()["current"]
@@ -157,6 +168,10 @@ void App::m_handleKeyEvent(const sf::Event::KeyEvent & event) {
 		break;
 	case sf::Keyboard::Q:
 		QuadTree::get().dump();
+		break;
+	case sf::Keyboard::M:
+		std::cout << std::setw(4)
+			<< JSONHolder::get()["moving"] << std::endl;
 		break;
 	}
 }
@@ -177,10 +192,11 @@ void App::m_update() {
 }
 
 void App::m_updateMovingComponent() {
-	if (JSONHolder::get()["moving ID"].is_null()) {
+	if (JSONHolder::get()["moving"].is_null()) {
 		return;
 	}
-	std::string id = JSONHolder::get()["moving ID"];
+	print(JSONHolder::get()["moving"]);
+	std::string id = JSONHolder::get()["moving"]["id"];
 	nlohmann::json & component = JSONHolder::get()["components"][id];
 	int cellsize = JSONHolder::get()["settings"]["cellsize"];
 	sf::Vector2i mouse(mapToFieldCoords(sf::Mouse::getPosition(m_window))
@@ -275,9 +291,6 @@ void App::m_disconnectPin(nlohmann::json & pin) {
 	if (pin["connection"].is_null()) {
 		return;
 	}
-	std::cout << "+++++++++++++++++++++++++++++++++++++\n"
-		<< std::setw(4) << pin << std::endl 
-		<< "########################################\n";
 	if (pin["connection"].count("id") == 1) {
 		std::string otherParentID = pin["connection"]["parentID"];
 		std::string otherID = pin["connection"]["id"];
@@ -332,9 +345,28 @@ void App::moveSelectedComponent() {
 	if (id == "") {
 		return;
 	}
+	if (!JSONHolder::get()["selected pin"].is_null()) {
+		m_deselectPin();
+	}
 	nlohmann::json & component = JSONHolder::get()["components"][id];
 	component["moving"] = true;
-	JSONHolder::get()["moving ID"] = id;
+	JSONHolder::get()["moving"]["id"] = id;
+	JSONHolder::get()["moving"]["position"] = component["position"];
 	QuadTree::get().removeObject(id);
+}
+
+void App::cancelMovingComponent() {
+	if (JSONHolder::get()["moving"].is_null()) {
+		return;
+	}
+	std::string id = JSONHolder::get()["moving"]["id"];
+	if (id == "") {
+		return;
+	}
+	nlohmann::json & component = JSONHolder::get()["components"][id];
+	component["position"] = JSONHolder::get()["moving"]["position"];
+	component.erase("moving");
+	JSONHolder::get()["moving"] = nlohmann::json();
+	QuadTree::get().addObject(id);
 }
 

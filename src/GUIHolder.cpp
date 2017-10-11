@@ -103,6 +103,7 @@ void GUIHolder::m_addComponentButton(const std::string & name,
 
 void GUIHolder::m_componentButtonSignal(const std::string & name) {
 	JSONHolder::get()["current"] = JSONHolder::get()["components/" + name];
+	App::get().cancelMovingComponent();
 }
 
 void GUIHolder::createContextMenu(int x, int y) {
