@@ -294,3 +294,13 @@ void App::deleteSelectedComponent() {
 	JSONHolder::get()["selected component ID"] = nlohmann::json();
 }
 
+void App::moveSelectedComponent() {
+	std::string id = JSONHolder::get()["selected component ID"];
+	if (id == "") {
+		return;
+	}
+	nlohmann::json & component = JSONHolder::get()["components"][id];
+	component["moving"] = true;
+	JSONHolder::get()["moving ID"] = id;
+}
+

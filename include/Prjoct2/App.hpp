@@ -35,6 +35,7 @@ public:
 	sf::RenderWindow & window();
 	sf::Vector2f mapToFieldCoords(sf::Vector2i pixel);
 	void deleteSelectedComponent();
+	void moveSelectedComponent();
 };
 
 #endif // APP_HPP
