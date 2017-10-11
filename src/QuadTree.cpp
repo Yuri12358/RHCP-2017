@@ -80,6 +80,31 @@ bool QuadTree::Node::addObjectByRect(const std::string & id, sf::IntRect rect) {
 	return true;
 }
 
+bool QuadTree::Node::removeObjectByRect(const std::string & id, sf::IntRect rect) {
+	sf::IntRect result;
+	if (!rect.intersects(this->rect, result)) {
+		return false;
+	}
+	if (result == this->rect && componentID == id) {
+		componentID = "";
+		return true;
+	}
+	int childLeft = 4;
+	for (int i = 0; i < 4; ++i) {
+		Dir dir = (Dir) i;
+		if (nodes[dir] != nullptr) {
+			if (nodes[dir]->removeObjectByRect(id, rect)) {
+				delete nodes[dir];
+				nodes[dir] = nullptr;
+				--childLeft;
+			}
+		} else {
+			--childLeft;
+		}
+	}
+	return childLeft == 0;
+}
+
 void QuadTree::Node::m_createChild(QuadTree::Node::Dir dir) {
 	assert(nodes[dir] == nullptr);
 	assert(rect.width > 1 && rect.height > 1);
@@ -113,11 +138,53 @@ QuadTree & QuadTree::get() {
 }
 
 void QuadTree::addObject(const std::string & id) {
-	if (JSONHolder::get()["components"][id].is_null()) {
+	if (JSONHolder::get()["components"].count(id) == 1) {
+		auto rect = ComponentInfo::getRect(id);
+		m_addObjectByRect(id, rect);
+	}
+}
+
+void QuadTree::removeObject(const std::string & id) {
+	if (JSONHolder::get()["components"].count(id) == 1) {
+		auto rect = ComponentInfo::getRect(id);
+		m_removeObjectByRect(id, rect);
+	}
+}
+
+void QuadTree::m_removeObjectByRect(const std::string & id, sf::IntRect rect) {
+	if (m_node == nullptr) {
 		return;
 	}
-	auto rect = ComponentInfo::getRect(id);
-	m_addObjectByRect(id, rect);
+	sf::IntRect result;
+	rect.intersects(m_node->rect, result);
+	if (m_node->removeObjectByRect(id, rect)) {
+		delete m_node;
+		m_node = nullptr;
+	} else {
+		m_shrink();
+	}
+}
+
+void QuadTree::m_shrink() {
+	bool needShrink = true;
+	while (needShrink) {
+		int lastNonNull = -1;
+		int count = 0;
+		for (int i = 0; i < 4; ++i) {
+			if (m_node->nodes[i] != nullptr) {
+				++count;
+				lastNonNull = i;
+			}
+		}
+		if (count == 1) {
+			Node * newRoot = m_node->nodes[lastNonNull];
+			delete m_node;
+			m_node = newRoot;
+			needShrink = true;
+		} else {
+			needShrink = false;
+		}
+	}
 }
 
 void QuadTree::m_addObjectByRect(const std::string & id, sf::IntRect rect) {
@@ -204,5 +271,51 @@ std::string QuadTree::getComponentID(sf::Vector2f position) {
 	 int cellsize = JSONHolder::get()["settings"]["cellsize"];
 	 sf::Vector2i iPosition(position / float(cellsize));
 	 return m_getComponentID(iPosition.x, iPosition.y);
+}
+
+void QuadTree::dump() {
+	if (m_node == nullptr) {
+		std::cout << "null";
+	} else {
+		m_node->dump();
+	}
+	std::cout << std::endl;
+}
+
+void QuadTree::Node::dump(int depth) {
+	auto addSpace = [&](int d) {
+		for (int i = 0; i < d; ++i) {
+			std::cout << "    ";
+		}
+	};
+	std::cout << "{\n";
+	addSpace(depth + 1);
+	std::cout << "rect: (" << rect.left << ", " << rect.top << ", "
+		<< rect.width << ", " << rect.height << ")\n";
+	if (componentID != "") {
+		addSpace(depth + 1);
+		std::cout << "component id: " << componentID << '\n';
+	}
+	for (int i = 0; i < 4; ++i) {
+		if (nodes[i] != nullptr) {
+			addSpace(depth + 1);
+			switch (i) {
+			case 0:
+				std::cout << "UR: ";
+				break;
+			case 1:
+				std::cout << "DR: ";
+				break;
+			case 2:
+				std::cout << "DL: ";
+				break;
+			case 3:
+				std::cout << "UL: ";
+			}
+			nodes[i]->dump(depth + 1);
+		}
+	}
+	addSpace(depth);
+	std::cout << "}\n";
 }
 

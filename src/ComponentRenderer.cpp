@@ -147,14 +147,24 @@ void ComponentRenderer::m_drawWire(nlohmann::json & pin) {
 			wire[1].position = wire[2].position = sf::Vector2f(
 				otherPos.x, pos.y) * float(cellsize);
 		}
+	}					// There will be for about 16 if's
+	else
+	{
+		auto Dir1 = dir1, Dir2 = dir2;
+		auto Pos = pos, OtherPos = otherPos;
+		if((dir2 & rotateDirection(dir1, -1)))
+		{
+			//swap
+			Dir1 = dir2;
+			Dir2 = dir1;
+			Pos = otherPos;
+			OtherPos = pos;
+		}
+		//if(Pos.x - OtherPos.x > 0)
+		{
+			wire[1].position = wire[2].position = sf::Vector2f(OtherPos.x, Pos.y) * float(cellsize);
+		}
 	}
-//	else if((dir1 & (Up | Down)) && (dir2 & (Left | Right)))
-//	{
-//		if(pos.x - otherPos.x > 0)
-//		{
-//			wire[1]
-//		}
-//	}
 
 	wire[3].position = otherPos * float(cellsize);
 	wire[0].color = wire[1].color = wire[2].color = wire[3].color

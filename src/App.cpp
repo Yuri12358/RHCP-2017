@@ -155,6 +155,9 @@ void App::m_handleKeyEvent(const sf::Event::KeyEvent & event) {
 		std::cout << std::setw(4)
 			<< JSONHolder::get()["selected pin"] << std::endl;
 		break;
+	case sf::Keyboard::Q:
+		QuadTree::get().dump();
+		break;
 	}
 }
 
@@ -319,6 +322,7 @@ void App::deleteSelectedComponent() {
 	for (nlohmann::json & pin : component["pins"]) {
 		m_disconnectPin(pin);
 	}
+	QuadTree::get().removeObject(id);
 	JSONHolder::get()["components"].erase(id);
 	JSONHolder::get()["selected component ID"] = nlohmann::json();
 }
