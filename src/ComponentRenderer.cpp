@@ -160,7 +160,7 @@ void ComponentRenderer::m_drawWire(nlohmann::json & pin) {
 			Pos = otherPos;
 			OtherPos = pos;
 		}
-		if(Pos.x - OtherPos.x > 0)
+		//if(Pos.x - OtherPos.x > 0)
 		{
 			wire[1].position = wire[2].position = sf::Vector2f(OtherPos.x, Pos.y) * float(cellsize);
 		}
