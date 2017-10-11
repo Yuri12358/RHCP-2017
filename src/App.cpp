@@ -76,17 +76,14 @@ void App::m_selectComponent(int x, int y) {
 
 void App::m_placeNewComponent(int pressX, int pressY) {
 	auto idString = std::to_string(m_nextComponentID);
-	auto & component 
-		= JSONHolder::get()["components"][idString];
+	auto & component = JSONHolder::get()["components"][idString];
 	component = JSONHolder::get()["current"];
 	component["id"] = m_nextComponentID;
 	int cellsize = JSONHolder::get()["settings"]["cellsize"];
-	sf::Vector2i mouse(m_window.mapPixelToCoords(
-		sf::Vector2i(pressX, pressY), m_fieldView));
-	component["position"] = {
-		{"x", mouse.x / cellsize},
-		{"y", mouse.y / cellsize}
-	};
+	sf::Vector2i mouse(mapToFieldCoords(sf::Vector2i(pressX, pressY))
+		/ float(cellsize));
+	component["position"]["x"] = mouse.x;
+	component["position"]["y"] = mouse.y;
 	std::string currentType = component["type"];
 	if (currentType != "dot") {
 		for (nlohmann::json & pin : component["pins"]) {
@@ -103,11 +100,29 @@ void App::m_placeNewComponent(int pressX, int pressY) {
 	}
 }
 
+void App::m_placeMovingComponent(int pressX, int pressY) {
+	std::string id = JSONHolder::get()["moving ID"];
+	nlohmann::json & component = JSONHolder::get()["components"][id];
+	int cellsize = JSONHolder::get()["settings"]["cellsize"];
+	sf::Vector2i mouse(mapToFieldCoords(sf::Vector2i(pressX, pressY))
+		/ float(cellsize));
+	component["position"]["x"] = mouse.x;
+	component["position"]["y"] = mouse.y;
+	auto rect = ComponentInfo::getRect(component);
+	if (QuadTree::get().intersects(rect) == "") {
+		component.erase("moving");
+		JSONHolder::get()["moving ID"] = nlohmann::json();
+		QuadTree::get().addObject(id);
+	}
+}
+
 void App::m_handleMousePressEvent(const sf::Event::MouseButtonEvent & event) {
 	GUIHolder::get().removeContextMenu();
 	switch (event.button) {
 	case sf::Mouse::Left:
-		if (JSONHolder::get()["current"].is_null()) {
+		if (!JSONHolder::get()["moving ID"].is_null()) {
+			m_placeMovingComponent(event.x, event.y);
+		} else if (JSONHolder::get()["current"].is_null()) {
 			m_selectPin(event.x, event.y);
 		} else {
 			m_deselectPin();
@@ -158,6 +173,20 @@ void App::m_render() {
 
 void App::m_update() {
 	m_updateFieldView();
+	m_updateMovingComponent();
+}
+
+void App::m_updateMovingComponent() {
+	if (JSONHolder::get()["moving ID"].is_null()) {
+		return;
+	}
+	std::string id = JSONHolder::get()["moving ID"];
+	nlohmann::json & component = JSONHolder::get()["components"][id];
+	int cellsize = JSONHolder::get()["settings"]["cellsize"];
+	sf::Vector2i mouse(mapToFieldCoords(sf::Mouse::getPosition(m_window))
+		/ float(cellsize));
+	component["position"]["x"] = mouse.x;
+	component["position"]["y"] = mouse.y;
 }
 
 void App::m_updateFieldView() {
@@ -296,5 +325,16 @@ void App::deleteSelectedComponent() {
 	QuadTree::get().removeObject(id);
 	JSONHolder::get()["components"].erase(id);
 	JSONHolder::get()["selected component ID"] = nlohmann::json();
+}
+
+void App::moveSelectedComponent() {
+	std::string id = JSONHolder::get()["selected component ID"];
+	if (id == "") {
+		return;
+	}
+	nlohmann::json & component = JSONHolder::get()["components"][id];
+	component["moving"] = true;
+	JSONHolder::get()["moving ID"] = id;
+	QuadTree::get().removeObject(id);
 }
 

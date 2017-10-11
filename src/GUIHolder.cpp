@@ -108,6 +108,7 @@ void GUIHolder::m_componentButtonSignal(const std::string & name) {
 void GUIHolder::createContextMenu(int x, int y) {
 	auto list = tgui::ListBox::create();
 	list->setPosition(x, y);
+	list->addItem("Move");
 	list->addItem("Delete");
 	list->setSize(100, list->getItemHeight() * list->getItemCount() + 2);
 	std::function<void(const std::string &)> signal = std::bind(&GUIHolder
@@ -121,7 +122,9 @@ void GUIHolder::m_contextMenuSignal(const std::string & item) {
 		return;
 	}
 	removeContextMenu();
-	if (item == "Delete") {
+	if (item == "Move") {
+		App::get().moveSelectedComponent();
+	} else if (item == "Delete") {
 		App::get().deleteSelectedComponent();
 	}
 }

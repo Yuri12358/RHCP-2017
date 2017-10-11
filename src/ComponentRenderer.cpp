@@ -323,6 +323,17 @@ void ComponentRenderer::drawComponent(nlohmann::json & component) {
 		static_cast<int>(component["position"]["x"]),
 		static_cast<int>(component["position"]["y"]));
 	shape.setPosition(sf::Vector2f(position * cellsize));
+	if (component.count("moving") == 1) {
+		shape.setOutlineThickness(-1);
+		if (QuadTree::get().intersects(ComponentInfo::getRect(component))
+			== "") {
+			shape.setOutlineColor(sf::Color(128, 128, 255));
+			shape.setFillColor(sf::Color(128, 128, 255, 128));
+		} else {
+			shape.setOutlineColor(sf::Color::Red);
+			shape.setFillColor(sf::Color(255, 0, 0, 128));
+		}
+	}
 	App::get().window().draw(shape);
 	m_drawPins(component);
 }

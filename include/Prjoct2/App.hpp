@@ -15,7 +15,9 @@ class App {
 	void m_renderComponents();
 	void m_update();
 	void m_updateFieldView();
+	void m_updateMovingComponent();
 	void m_placeNewComponent(int pressX, int pressY);
+	void m_placeMovingComponent(int pressX, int pressY);
 	void m_deselectPin();
 	void m_selectPin(int pressX, int pressY);
 	void m_connectPins(nlohmann::json & pin1, nlohmann::json & pin2);
@@ -35,6 +37,7 @@ public:
 	sf::RenderWindow & window();
 	sf::Vector2f mapToFieldCoords(sf::Vector2i pixel);
 	void deleteSelectedComponent();
+	void moveSelectedComponent();
 };
 
 #endif // APP_HPP
