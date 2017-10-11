@@ -16,7 +16,10 @@ class QuadTree {
 
 		Node();
 		bool addObjectByRect(const std::string & id, sf::IntRect rect);
+		bool removeObjectByRect(const std::string & id,
+			sf::IntRect rect);
 		std::string intersects(sf::IntRect rect);
+		void dump(int depth = 0);
 		static Dir getOpposite(Dir dir);
 		static Dir getByCoords(bool x, bool y);
 
@@ -30,8 +33,10 @@ class QuadTree {
 
 	QuadTree();
 	void m_addObjectByRect(const std::string & id, sf::IntRect rect);
+	void m_removeObjectByRect(const std::string & id, sf::IntRect rect);
 	void m_init(sf::IntRect rect);
 	void m_extend(sf::IntRect rect);
+	void m_shrink();
 	std::string m_getComponentID(int x, int y);
 
 	static QuadTree * s_instance;
@@ -40,9 +45,11 @@ class QuadTree {
 public:
 	static QuadTree & get();
 	void addObject(const std::string & id);
+	void removeObject(const std::string & id);
 	std::string intersects(sf::IntRect rect);
 	nlohmann::json * getPin(int x, int y);
 	std::string getComponentID(sf::Vector2f position);
+	void dump();
 };
 
 #endif // QUAD_TREE_HPP
