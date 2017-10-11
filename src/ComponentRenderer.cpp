@@ -152,6 +152,7 @@ void ComponentRenderer::m_drawWire(nlohmann::json & pin) {
 	{
 		auto Dir1 = dir1, Dir2 = dir2;
 		auto Pos = pos, OtherPos = otherPos;
+		int vertex1 = 1, vertex2 = 2;
 		if((dir2 & rotateDirection(dir1, -1)))
 		{
 			//swap
@@ -159,6 +160,8 @@ void ComponentRenderer::m_drawWire(nlohmann::json & pin) {
 			Dir2 = dir1;
 			Pos = otherPos;
 			OtherPos = pos;
+			vertex1 = 2;
+			vertex2 = 1;
 		}
 		//if(Pos.x - OtherPos.x > 0)
 		//{
@@ -170,24 +173,24 @@ void ComponentRenderer::m_drawWire(nlohmann::json & pin) {
 			{
 				if(Pos.y < OtherPos.y)
 				{
-					wire[1].position = wire[2].position = sf::Vector2f(OtherPos.x, Pos.y) * float(cellsize);
+					wire[vertex1].position = wire[vertex2].position = sf::Vector2f(OtherPos.x, Pos.y) * float(cellsize);
 				}
 				else
 				{
-					wire[1].position = sf::Vector2f((Pos.x + OtherPos.x) / 2, Pos.y) * float(cellsize);
-					wire[2].position = sf::Vector2f((Pos.x + OtherPos.x) / 2, OtherPos.y) * float(cellsize);
+					wire[vertex1].position = sf::Vector2f((Pos.x + OtherPos.x) / 2, Pos.y) * float(cellsize);
+					wire[vertex2].position = sf::Vector2f((Pos.x + OtherPos.x) / 2, OtherPos.y) * float(cellsize);
 				}
 			}
 			else
 			{
 				if(Pos.y < OtherPos.y)
 				{
-					wire[1].position = sf::Vector2f(Pos.x, (Pos.y + OtherPos.y) / 2) * float(cellsize);
-					wire[2].position = sf::Vector2f(OtherPos.x, (Pos.y + OtherPos.y) / 2) * float(cellsize);
+					wire[vertex1].position = sf::Vector2f(Pos.x, (Pos.y + OtherPos.y) / 2) * float(cellsize);
+					wire[vertex2].position = sf::Vector2f(OtherPos.x, (Pos.y + OtherPos.y) / 2) * float(cellsize);
 				}
 				else
 				{
-					wire[1].position = wire[2].position = sf::Vector2f(Pos.x, OtherPos.y) * float(cellsize);
+					wire[vertex1].position = wire[vertex2].position = sf::Vector2f(Pos.x, OtherPos.y) * float(cellsize);
 				}
 			}
 		}
@@ -197,24 +200,24 @@ void ComponentRenderer::m_drawWire(nlohmann::json & pin) {
 			{
 				if(Pos.y < OtherPos.y)
 				{
-					wire[1].position = wire[2].position = sf::Vector2f(Pos.x, OtherPos.y) * float(cellsize);
+					wire[vertex1].position = wire[vertex2].position = sf::Vector2f(Pos.x, OtherPos.y) * float(cellsize);
 				}
 				else
 				{
-					wire[1].position = sf::Vector2f(Pos.x, (Pos.y + OtherPos.y) / 2) * float(cellsize);
-					wire[2].position = sf::Vector2f(OtherPos.x, (Pos.y + OtherPos.y) / 2) * float(cellsize);
+					wire[vertex1].position = sf::Vector2f(Pos.x, (Pos.y + OtherPos.y) / 2) * float(cellsize);
+					wire[vertex2].position = sf::Vector2f(OtherPos.x, (Pos.y + OtherPos.y) / 2) * float(cellsize);
 				}
 			}
 			else
 			{
 				if(Pos.y < OtherPos.y)
 				{
-					wire[1].position = sf::Vector2f((Pos.x + OtherPos.x) / 2, Pos.y) * float(cellsize);
-					wire[2].position = sf::Vector2f((Pos.x + OtherPos.x) / 2, OtherPos.y) * float(cellsize);
+					wire[vertex1].position = sf::Vector2f((Pos.x + OtherPos.x) / 2, Pos.y) * float(cellsize);
+					wire[vertex2].position = sf::Vector2f((Pos.x + OtherPos.x) / 2, OtherPos.y) * float(cellsize);
 				}
 				else
 				{
-					wire[1].position = wire[2].position = sf::Vector2f(OtherPos.x, Pos.y) * float(cellsize);
+					wire[vertex1].position = wire[vertex2].position = sf::Vector2f(OtherPos.x, Pos.y) * float(cellsize);
 				}
 			}
 		}
@@ -224,24 +227,24 @@ void ComponentRenderer::m_drawWire(nlohmann::json & pin) {
 			{
 				if(Pos.y < OtherPos.y)
 				{
-					wire[1].position = sf::Vector2f((Pos.x + OtherPos.x) / 2, OtherPos.y) * float(cellsize);
-					wire[2].position = sf::Vector2f((Pos.x + OtherPos.x) / 2, Pos.y) * float(cellsize);
+					wire[vertex1].position = sf::Vector2f((Pos.x + OtherPos.x) / 2, Pos.y) * float(cellsize);
+					wire[vertex2].position = sf::Vector2f((Pos.x + OtherPos.x) / 2, OtherPos.y) * float(cellsize);
 				}
 				else
 				{
-					wire[1].position = wire[2].position = sf::Vector2f(Pos.x, OtherPos.y) * float(cellsize);
+					wire[vertex1].position = wire[vertex2].position = sf::Vector2f(Pos.x, OtherPos.y) * float(cellsize);
 				}
 			}
 			else
 			{
 				if(Pos.y < OtherPos.y)
 				{
-					wire[1].position = wire[2].position = sf::Vector2f(OtherPos.x, Pos.y) * float(cellsize);
+					wire[vertex1].position = wire[vertex2].position = sf::Vector2f(OtherPos.x, Pos.y) * float(cellsize);
 				}
 				else
 				{
-					wire[1].position = sf::Vector2f(OtherPos.x, (Pos.y + OtherPos.y) / 2) * float(cellsize);
-					wire[2].position = sf::Vector2f(Pos.x, (Pos.y + OtherPos.y) / 2) * float(cellsize);
+					wire[vertex1].position = sf::Vector2f(Pos.x, (Pos.y + OtherPos.y) / 2) * float(cellsize);
+					wire[vertex2].position = sf::Vector2f(OtherPos.x, (Pos.y + OtherPos.y) / 2) * float(cellsize);
 				}
 			}
 		}
@@ -251,24 +254,24 @@ void ComponentRenderer::m_drawWire(nlohmann::json & pin) {
 			{
 				if(Pos.y < OtherPos.y)
 				{
-					wire[1].position = sf::Vector2f(OtherPos.x, (Pos.y + OtherPos.y) / 2) * float(cellsize);
-					wire[2].position = sf::Vector2f(Pos.x, (Pos.y + OtherPos.y) / 2) * float(cellsize);
+					wire[vertex1].position = sf::Vector2f(Pos.x, (Pos.y + OtherPos.y) / 2) * float(cellsize);
+					wire[vertex2].position = sf::Vector2f(OtherPos.x, (Pos.y + OtherPos.y) / 2) * float(cellsize);
 				}
 				else
 				{
-					wire[1].position = wire[2].position = sf::Vector2f(OtherPos.x, Pos.y) * float(cellsize);
+					wire[vertex1].position = wire[vertex2].position = sf::Vector2f(OtherPos.x, Pos.y) * float(cellsize);
 				}
 			}
 			else
 			{
 				if(Pos.y < OtherPos.y)
 				{
-					wire[1].position = wire[2].position = sf::Vector2f(Pos.x, OtherPos.y) * float(cellsize);
+					wire[vertex1].position = wire[vertex2].position = sf::Vector2f(Pos.x, OtherPos.y) * float(cellsize);
 				}
 				else
 				{
-					wire[1].position = sf::Vector2f((Pos.x + OtherPos.x) / 2, OtherPos.y) * float(cellsize);
-					wire[2].position = sf::Vector2f((Pos.x + OtherPos.x) / 2, Pos.y) * float(cellsize);
+					wire[vertex1].position = sf::Vector2f((Pos.x + OtherPos.x) / 2, Pos.y) * float(cellsize);
+					wire[vertex2].position = sf::Vector2f((Pos.x + OtherPos.x) / 2, OtherPos.y) * float(cellsize);
 				}
 			}
 		}
