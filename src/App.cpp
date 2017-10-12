@@ -42,7 +42,8 @@ void App::run() {
 void App::m_handleEvents() {
 	sf::Event event;
 	while (m_window.pollEvent(event)) {
-		if (GUIHolder::get().gui().handleEvent(event)) {
+		if (GUIHolder::get().gui().handleEvent(event) && event.type
+			!= sf::Event::KeyPressed) {
 			continue;
 		}
 		switch (event.type) {
@@ -148,14 +149,7 @@ void App::m_handleKeyEvent(const sf::Event::KeyEvent & event) {
 	GUIHolder::get().removeContextMenu();
 	switch (event.code) {
 	case sf::Keyboard::Escape:
-		std::cout << "Escape\n";
-		if (!JSONHolder::get()["current"].is_null()) {
-			JSONHolder::get()["current"] = nlohmann::json();
-		} else if (!JSONHolder::get()["moving"].is_null()) {
-			cancelMovingComponent();
-		} else if (!JSONHolder::get()["selected pin"].is_null()) {
-			m_deselectPin();
-		} else {
+		if (!m_cancelStartedAction()) {
 			m_window.close();
 		}
 		break;
@@ -180,7 +174,50 @@ void App::m_handleKeyEvent(const sf::Event::KeyEvent & event) {
 		std::cout << std::setw(4)
 			<< JSONHolder::get()["moving"] << std::endl;
 		break;
+	case sf::Keyboard::Delete:
+		if (!JSONHolder::get()["selected pin"].is_null()) {
+			m_disconnectSelectedPin();
+			m_deselectPin();
+		}
+		break;
+	case sf::Keyboard::Z:
+		m_handleZKeyPress(event);
+		break;
 	}
+}
+
+void App::m_handleZKeyPress(const sf::Event::KeyEvent & zKey) {
+	if (!zKey.control) {
+		return;
+	}
+	if (zKey.shift) {
+		m_redo();
+	} else {
+		m_undo();
+	}
+}
+
+void App::m_undo() {
+	if (m_cancelStartedAction()) {
+		return;
+	}
+}
+
+void App::m_redo() {
+}
+
+bool App::m_cancelStartedAction() {
+	if (!JSONHolder::get()["current"].is_null()) {
+		JSONHolder::get()["current"] = nlohmann::json();
+		return true;
+	} else if (!JSONHolder::get()["moving"].is_null()) {
+		cancelMovingComponent();
+		return true;
+	} else if (!JSONHolder::get()["selected pin"].is_null()) {
+		m_deselectPin();
+		return true;
+	}
+	return false;
 }
 
 void App::m_render() {
@@ -307,7 +344,7 @@ void App::m_disconnectPin(nlohmann::json & pin) {
 		nlohmann::json & other = *(ComponentInfo::getComponentPin(
 			pin["connection"]["parentID"], pin["connection"]["x"],
 			pin["connection"]["y"]));
-		other["connection"] = nlohmann::json();
+		other.erase("connection");
 	}
 	if (pin.count("temporary") == 1) {
 		std::string parentID = pin["parentID"];
@@ -315,7 +352,24 @@ void App::m_disconnectPin(nlohmann::json & pin) {
 		JSONHolder::get()["components"][parentID]["pins"]
 			.erase(id);
 	} else {
-		pin["connection"] = nlohmann::json();
+		pin.erase("connection");
+	}
+}
+
+void App::m_disconnectSelectedPin() {
+	nlohmann::json & selectedPin = JSONHolder::get()["selected pin"];
+	if (selectedPin.count("temporary") == 1) {
+		nlohmann::json & parent = JSONHolder::get()["components"]
+			[selectedPin["parentID"].get<std::string>()];
+		for (nlohmann::json & pin : parent["pins"]) {
+			m_disconnectPin(pin);
+		}
+	} else {
+		nlohmann::json * pinPtr = ComponentInfo::getComponentPin(
+			selectedPin["parentID"].get<std::string>(),
+			selectedPin["x"].get<int>(),
+			selectedPin["y"].get<int>());
+		m_disconnectPin(*pinPtr);
 	}
 }
 

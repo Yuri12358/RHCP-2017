@@ -11,6 +11,10 @@ class App {
 	void m_handleMousePressEvent(const sf::Event::MouseButtonEvent & event);
 	void m_handleMouseReleaseEvent(const sf::Event::MouseButtonEvent & e);
 	void m_handleKeyEvent(const sf::Event::KeyEvent & event);
+	void m_handleZKeyPress(const sf::Event::KeyEvent & event);
+
+	void m_undo();
+	void m_redo();
 	
 	void m_render();
 	void m_renderComponents();
@@ -30,6 +34,9 @@ class App {
 	void m_connectPins(nlohmann::json & pin1, nlohmann::json & pin2);
 
 	void m_disconnectPin(nlohmann::json & pin);
+	void m_disconnectSelectedPin();
+
+	bool m_cancelStartedAction();
 
 	static App * s_instance;
 	sf::RenderWindow m_window;

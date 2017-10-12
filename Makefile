@@ -38,7 +38,8 @@ obj/App.o: src/App.cpp $(hdr)App.hpp \
 	obj/TextureHolder.o \
 	obj/QuadTree.o \
 	obj/ComponentRenderer.o \
-	obj/GUIHolder.o
+	obj/GUIHolder.o \
+	obj/History.o
 	g++ -c $< -Iinclude -o $@
 	g++ -c -g $< -Iinclude -o debug/$@
 
@@ -75,6 +76,10 @@ obj/GUIHolder.o: src/GUIHolder.cpp $(hdr)GUIHolder.hpp \
 	g++ -c -g $< -Iinclude -o debug/$@
 
 obj/Direction.o: src/Direction.cpp $(hdr)Direction.hpp
+	g++ -c $< -Iinclude -o $@
+	g++ -c -g $< -Iinclude -o debug/$@
+
+obj/History.o: src/History.cpp $(hdr)History.hpp
 	g++ -c $< -Iinclude -o $@
 	g++ -c -g $< -Iinclude -o debug/$@
 
