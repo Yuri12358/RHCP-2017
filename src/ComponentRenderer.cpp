@@ -85,8 +85,66 @@ void ComponentRenderer::m_drawWire(nlohmann::json & pin) {
 	
 	Direction dir1 = ComponentInfo::getPinOrientation(pin);
 	Direction dir2 = ComponentInfo::getPinOrientation(otherPin);
+	
+	auto pos1 = pos, pos2 = otherPos;
 
-	if((dir1 & (Left | Right)) && (dir1 & getOppositeDirection(dir2))) {
+	int index1 = 1, index2 = 2;
+
+	if(dir1 == All)
+	{
+		std::swap(dir1, dir2);
+		std::swap(pos1, pos2);
+		std::swap(index1, index2);
+	}
+	
+	if(dir2 == All)
+	{
+		if(dir1 & Left)
+		{
+			if(pos1.x < pos2.x)
+			{
+				wire[index1].position = wire[index2].position = sf::Vector2f(pos1.x, pos2.y) * float(cellsize);
+			}
+			else
+			{
+				wire[index1].position = wire[index2].position = sf::Vector2f(pos2.x, pos1.y) * float(cellsize);
+			}
+		}
+		else if(dir1 & Up)
+		{
+			if(pos1.y > pos2.y)
+			{
+				wire[index1].position = wire[index2].position = sf::Vector2f(pos1.x, pos2.y) * float(cellsize);
+			}
+			else
+			{
+				wire[index1].position = wire[index2].position = sf::Vector2f(pos2.x, pos1.y) * float(cellsize);
+			}	
+		}
+		else if(dir1 & Right)
+		{
+			if(pos1.x < pos2.x)
+			{
+				wire[index1].position = wire[index2].position = sf::Vector2f(pos2.x, pos1.y) * float(cellsize);
+			}
+			else
+			{
+				wire[index1].position = wire[index2].position = sf::Vector2f(pos1.x, pos2.y) * float(cellsize);
+			}
+		}
+		else if(dir1 & Down)
+		{
+			if(pos1.y > pos2.y)
+			{
+				wire[index1].position = wire[index2].position = sf::Vector2f(pos2.x, pos1.y) * float(cellsize);
+			}
+			else
+			{
+				wire[index1].position = wire[index2].position = sf::Vector2f(pos1.x, pos2.y) * float(cellsize);
+			}
+		}
+	}
+	else if((dir1 & (Left | Right)) && (dir1 & getOppositeDirection(dir2))) {
 		sf::Vector2f left = otherPos, right = pos;
 		if ((dir1 & Left) && !(dir2 & Left)) {
 			left = pos;
@@ -140,14 +198,14 @@ void ComponentRenderer::m_drawWire(nlohmann::json & pin) {
 			up = pos;
 			down = otherPos;
 		}
-		if ((up.x - down.x) > 0) {
+		if ((up.y - down.y) < 0) {
 			wire[1].position = wire[2].position = sf::Vector2f(
 				pos.x, otherPos.y) * float(cellsize);
 		} else {
 			wire[1].position = wire[2].position = sf::Vector2f(
 				otherPos.x, pos.y) * float(cellsize);
 		}
-	}					// There will be for about 16 if's
+	}	
 	else
 	{
 		auto Dir1 = dir1, Dir2 = dir2;
@@ -155,7 +213,6 @@ void ComponentRenderer::m_drawWire(nlohmann::json & pin) {
 		int vertex1 = 1, vertex2 = 2;
 		if((dir2 & rotateDirection(dir1, -1)))
 		{
-			//swap
 			Dir1 = dir2;
 			Dir2 = dir1;
 			Pos = otherPos;
@@ -163,10 +220,6 @@ void ComponentRenderer::m_drawWire(nlohmann::json & pin) {
 			vertex1 = 2;
 			vertex2 = 1;
 		}
-		//if(Pos.x - OtherPos.x > 0)
-		//{
-		//	wire[1].position = wire[2].position = sf::Vector2f(OtherPos.x, Pos.y) * float(cellsize);
-		//}
 		if(Dir1 == Left)
 		{
 			if(Pos.x > OtherPos.x)
