@@ -8,6 +8,7 @@
 class History {
 	struct HistoryEntry {
 		void undo();
+		void redo();
 
 		nlohmann::json patch;
 		nlohmann::json reversePatch;
@@ -19,6 +20,7 @@ class History {
 
 	static History * s_instance;
 	std::list<HistoryEntryPtr> m_entryList;
+	std::list<HistoryEntryPtr> m_redoList;
 	nlohmann::json m_beforeModification;
 	bool m_modificationStarted;
 
@@ -28,6 +30,7 @@ public:
 	void abortModification();
 	void endModification();
 	void undo();
+	void redo();
 };
 
 #endif // HISTORY_HPP

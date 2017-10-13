@@ -1,4 +1,5 @@
 #include<Prjoct2/JSONHolder.hpp>
+#include<Prjoct2/QuadTree.hpp>
 #include<Prjoct2/History.hpp>
 #include<nlohmann/json.hpp>
 #include<stdexcept>
@@ -55,13 +56,30 @@ void History::undo() {
 		return;
 	}
 	m_entryList.front()->undo();
+	m_redoList.push_front(std::move(m_entryList.front()));
 	m_entryList.pop_front();
 }
 
-#include<Prjoct2/Debug.hpp>
-
 void History::HistoryEntry::undo() {
+	QuadTree::get().removeAll();
 	nlohmann::json components = JSONHolder::get()["components"];
 	JSONHolder::get()["components"] = components.patch(reversePatch);
+	QuadTree::get().addAll();
+}
+
+void History::redo() {
+	if (m_redoList.empty()) {
+		return;
+	}
+	m_redoList.front()->redo();
+	m_entryList.push_front(std::move(m_redoList.front()));
+	m_redoList.pop_front();
+}
+
+void History::HistoryEntry::redo() {
+	QuadTree::get().removeAll();
+	nlohmann::json components = JSONHolder::get()["components"];
+	JSONHolder::get()["components"] = components.patch(patch);
+	QuadTree::get().addAll();
 }
 

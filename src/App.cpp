@@ -214,6 +214,7 @@ void App::m_undo() {
 
 void App::m_redo() {
 	m_cancelStartedAction();
+	History::get().redo();
 }
 
 bool App::m_cancelStartedAction() {
@@ -249,7 +250,6 @@ void App::m_updateMovingComponent() {
 	if (JSONHolder::get()["moving"].is_null()) {
 		return;
 	}
-	print(JSONHolder::get()["moving"]);
 	std::string id = JSONHolder::get()["moving"]["id"];
 	nlohmann::json & component = JSONHolder::get()["components"][id];
 	int cellsize = JSONHolder::get()["settings"]["cellsize"];

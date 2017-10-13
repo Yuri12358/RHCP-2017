@@ -319,3 +319,15 @@ void QuadTree::Node::dump(int depth) {
 	std::cout << "}\n";
 }
 
+void QuadTree::removeAll() {
+	for (nlohmann::json & component : JSONHolder::get()["components"]) {
+		removeObject(component["id"].get<std::string>());
+	}
+}
+
+void QuadTree::addAll() {
+	for (nlohmann::json & component : JSONHolder::get()["components"]) {
+		addObject(component["id"].get<std::string>());
+	}
+}
+
