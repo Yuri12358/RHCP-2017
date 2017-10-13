@@ -4,6 +4,7 @@
 #include<Prjoct2/JSONHolder.hpp>
 #include<Prjoct2/GUIHolder.hpp>
 #include<Prjoct2/QuadTree.hpp>
+#include<Prjoct2/History.hpp>
 #include<Prjoct2/App.hpp>
 #include<iostream>
 #include<iomanip>
@@ -83,10 +84,11 @@ void App::m_selectComponent(int x, int y) {
 }
 
 void App::m_placeNewComponent(int pressX, int pressY) {
+	History::get().beginModification();
 	auto idString = std::to_string(m_nextComponentID);
 	auto & component = JSONHolder::get()["components"][idString];
 	component = JSONHolder::get()["current"];
-	component["id"] = m_nextComponentID;
+	component["id"] = idString;
 	int cellsize = JSONHolder::get()["settings"]["cellsize"];
 	sf::Vector2i mouse(mapToFieldCoords(sf::Vector2i(pressX, pressY))
 		/ float(cellsize));
@@ -103,8 +105,10 @@ void App::m_placeNewComponent(int pressX, int pressY) {
 		QuadTree::get().addObject(idString);
 		++m_nextComponentID;
 		JSONHolder::get()["current"] = nlohmann::json();
+		History::get().endModification();
 	} else {
 		JSONHolder::get()["components"].erase(idString);
+		History::get().abortModification();
 	}
 }
 
@@ -119,6 +123,10 @@ void App::m_placeMovingComponent(int pressX, int pressY) {
 	auto rect = ComponentInfo::getRect(component);
 	if (QuadTree::get().intersects(rect) == "") {
 		component.erase("moving");
+		nlohmann::json beforeMoving = component;
+		beforeMoving["position"] = JSONHolder::get()["moving"]
+			["position"];
+		History::get().endModification();
 		JSONHolder::get()["moving"] = nlohmann::json();
 		QuadTree::get().addObject(id);
 	}
@@ -201,9 +209,11 @@ void App::m_undo() {
 	if (m_cancelStartedAction()) {
 		return;
 	}
+	History::get().undo();
 }
 
 void App::m_redo() {
+	m_cancelStartedAction();
 }
 
 bool App::m_cancelStartedAction() {
@@ -299,6 +309,7 @@ void App::m_selectPin(int pressX, int pressY) {
 			m_deselectPin();
 			selectedPin = *pinPtr;
 		} else {
+			History::get().beginModification();
 			nlohmann::json * selectedPinPtr;
 			if (selectedPin.count("temporary") == 1) {
 				std::string id = selectedPin["id"];
@@ -315,6 +326,7 @@ void App::m_selectPin(int pressX, int pressY) {
 			m_connectPins(*pinPtr, *selectedPinPtr);	
 			m_connectPins(*selectedPinPtr, *pinPtr);
 			selectedPin = nlohmann::json();
+			History::get().endModification();
 		}
 	}
 }
@@ -335,9 +347,13 @@ void App::m_disconnectPin(nlohmann::json & pin) {
 	if (pin["connection"].is_null()) {
 		return;
 	}
+	nlohmann::json otherCopy;
 	if (pin["connection"].count("id") == 1) {
 		std::string otherParentID = pin["connection"]["parentID"];
 		std::string otherID = pin["connection"]["id"];
+		otherCopy = JSONHolder::get()["components"][otherParentID]
+			["pins"][otherID];
+		otherCopy.erase("connection");
 		JSONHolder::get()["components"][otherParentID]["pins"]
 			.erase(otherID);
 	} else {
@@ -345,7 +361,10 @@ void App::m_disconnectPin(nlohmann::json & pin) {
 			pin["connection"]["parentID"], pin["connection"]["x"],
 			pin["connection"]["y"]));
 		other.erase("connection");
+		otherCopy = other;
 	}
+	nlohmann::json pinCopy = pin;
+	pinCopy.erase("connection");
 	if (pin.count("temporary") == 1) {
 		std::string parentID = pin["parentID"];
 		std::string id = pin["id"];
@@ -357,6 +376,7 @@ void App::m_disconnectPin(nlohmann::json & pin) {
 }
 
 void App::m_disconnectSelectedPin() {
+	History::get().beginModification();
 	nlohmann::json & selectedPin = JSONHolder::get()["selected pin"];
 	if (selectedPin.count("temporary") == 1) {
 		nlohmann::json & parent = JSONHolder::get()["components"]
@@ -371,6 +391,7 @@ void App::m_disconnectSelectedPin() {
 			selectedPin["y"].get<int>());
 		m_disconnectPin(*pinPtr);
 	}
+	History::get().endModification();
 }
 
 void App::m_connectPins(nlohmann::json & pin1, nlohmann::json & pin2) {
@@ -387,21 +408,28 @@ sf::Vector2f App::mapToFieldCoords(sf::Vector2i pixel) {
 	return m_window.mapPixelToCoords(pixel, m_fieldView);
 }
 
-void App::deleteSelectedComponent() {
-	std::string id = JSONHolder::get()["selected component ID"];
-	if (id == "") {
+void App::deleteComponent(const std::string & id) {
+	if (JSONHolder::get()["components"].count(id) == 0) {
 		return;
 	}
 	nlohmann::json & component = JSONHolder::get()["components"][id];
+	History::get().beginModification();
 	for (nlohmann::json & pin : component["pins"]) {
 		m_disconnectPin(pin);
 	}
 	QuadTree::get().removeObject(id);
 	JSONHolder::get()["components"].erase(id);
+	History::get().endModification();
+}
+
+void App::deleteSelectedComponent() {
+	std::string id = JSONHolder::get()["selected component ID"];
+	deleteComponent(id);
 	JSONHolder::get()["selected component ID"] = nlohmann::json();
 }
 
 void App::moveSelectedComponent() {
+	History::get().beginModification();
 	std::string id = JSONHolder::get()["selected component ID"];
 	if (id == "") {
 		return;
@@ -429,5 +457,6 @@ void App::cancelMovingComponent() {
 	component.erase("moving");
 	JSONHolder::get()["moving"] = nlohmann::json();
 	QuadTree::get().addObject(id);
+	History::get().abortModification();
 }
 

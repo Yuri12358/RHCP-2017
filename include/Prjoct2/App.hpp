@@ -51,6 +51,7 @@ public:
 	sf::RenderWindow & window();
 	sf::Vector2f mapToFieldCoords(sf::Vector2i pixel);
 	void deleteSelectedComponent();
+	void deleteComponent(const std::string & id);
 	void moveSelectedComponent();
 	void cancelMovingComponent();
 };
