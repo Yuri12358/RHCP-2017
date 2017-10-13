@@ -351,7 +351,7 @@ void ComponentRenderer::m_drawPins(nlohmann::json & component) {
 				&& pin["parentID"] == selectedPin["parentID"]
 				&& pin["x"] == selectedPin["x"]
 				&& pin["y"] == selectedPin["y"]) {
-				pinShape.setFillColor(sf::Color::Green);
+				pinShape.setFillColor(sf::Color::Yellow);
 			} else {
 				pinShape.setFillColor(sf::Color::Black);
 			}

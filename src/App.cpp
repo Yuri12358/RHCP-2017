@@ -233,12 +233,20 @@ bool App::m_cancelStartedAction() {
 
 void App::m_render() {
 	m_window.clear(sf::Color::White);
+	m_renderBackground();
 	setFieldView();
 	m_renderComponents();
 	ComponentRenderer::get().drawCurrent();
 	resetView();
 	GUIHolder::get().gui().draw();
 	m_window.display();
+}
+
+void App::m_renderBackground() {
+	sf::RectangleShape shape(sf::Vector2f(m_window.getSize()));
+	shape.setTexture(&TextureHolder::get()["background"], true);
+	shape.setFillColor(sf::Color(255, 255, 255, 192));
+	m_window.draw(shape);
 }
 
 void App::m_update() {

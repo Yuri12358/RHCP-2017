@@ -17,6 +17,7 @@ class App {
 	void m_redo();
 	
 	void m_render();
+	void m_renderBackground();
 	void m_renderComponents();
 
 	void m_update();
