@@ -89,7 +89,12 @@ void GUIHolder::m_addComponentButton(const std::string & name,
 	auto button = tgui::Button::create();
 	button->setSize(buttonSize, buttonSize);
 	button->getRenderer()->setTexture(TextureHolder::get()[textureName]);
+	button->getRenderer()->setTextureHover(TextureHolder::get()[textureName]);
+	button->getRenderer()->setTextureDown(TextureHolder::get()[textureName]);
 	button->getRenderer()->setBorders(tgui::Borders(buttonBorders));
+	button->getRenderer()->setBorderColor(sf::Color(192, 192, 192, 215));
+	button->getRenderer()->setBorderColorHover(sf::Color(255, 255, 255));
+	button->getRenderer()->setBorderColorDown(sf::Color(128, 128, 128));
 	auto panel = m_gui.get<tgui::ScrollablePanel>("componentPanel");
 	int index = panel->getWidgets().size();
 	button->setPosition(spacing, buttonSize * index + spacing 
@@ -112,7 +117,11 @@ void GUIHolder::createContextMenu(int x, int y) {
 	list->setPosition(x, y);
 	list->addItem("Move");
 	list->addItem("Delete");
-	list->setSize(100, list->getItemHeight() * list->getItemCount() + 2);
+	auto borders = list->getRenderer()->getBorders();
+	auto padding = list->getRenderer()->getPadding();
+	list->setSize(100, list->getItemHeight() * list->getItemCount()
+		+ borders.getBottom() + borders.getTop()
+		+ padding.getBottom() + padding.getTop());
 	std::function<void(const std::string &)> signal = std::bind(&GUIHolder
 		::m_contextMenuSignal, this, std::placeholders::_1);
 	list->connect("itemSelected", signal);

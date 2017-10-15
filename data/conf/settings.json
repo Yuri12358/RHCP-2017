@@ -1,6 +1,6 @@
 {
 	"cellsize": 20,
-	"default theme": "data/themes/TransparentGrey.txt",
+	"default theme": "data/themes/Black.txt",
 	"window": {
 		"width": 800,
 		"height": 600,
