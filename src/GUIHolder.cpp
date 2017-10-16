@@ -109,6 +109,7 @@ void GUIHolder::m_addComponentButton(const std::string & name,
 
 void GUIHolder::m_componentButtonSignal(const std::string & name) {
 	JSONHolder::get()["current"] = JSONHolder::get()["components/" + name];
+	JSONHolder::get()["next component type"] = name;
 	App::get().cancelMovingComponent();
 }
 

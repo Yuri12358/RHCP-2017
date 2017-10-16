@@ -23,6 +23,7 @@ App::App()
 	, m_nextComponentID()
 	, m_fieldView(sf::FloatRect(0, 0, m_window.getSize().x,
 		m_window.getSize().y)) {
+	JSONHolder::get()["next component type"] = "dot";
 }
 
 App & App::get() {
@@ -163,8 +164,9 @@ void App::m_handleKeyEvent(const sf::Event::KeyEvent & event) {
 		}
 		break;
 	case sf::Keyboard::Space:
-		JSONHolder::get()["current"]
-			= JSONHolder::get()["components/lamp"];
+		JSONHolder::get()["current"] = JSONHolder::get()["components/"
+			+ JSONHolder::get()["next component type"]
+			.get<std::string>()];
 		break;
 	case sf::Keyboard::D:
 		std::cout << "++++++++++++++++++++++++++++++++++++++++++\n"
