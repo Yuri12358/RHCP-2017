@@ -1,6 +1,6 @@
 {
 	"cellsize": 20,
-	"default theme": "data/themes/Black.txt",
+	"default theme": "data/themes/TransparentGrey.txt",
 	"window": {
 		"width": 800,
 		"height": 600,
@@ -8,10 +8,11 @@
 		"fullscreen": true
 	},
 	"componentPanel": {
-		"spacing": 10,
+		"spacing": 5,
 		"button": {
-			"size": 50,
-			"borders": 5
+			"size": 80,
+			"borders": 5,
+			"picture size": 40
 		}
 	},
 	"components": [

@@ -13,6 +13,7 @@ class TextureHolder {
 public:
 	static TextureHolder & get();
 	sf::Texture & operator[](const std::string & name);
+	void set(const std::string & name, const sf::Texture & texture);
 };
 
 #endif // TEXTURE_HOLDER_HPP

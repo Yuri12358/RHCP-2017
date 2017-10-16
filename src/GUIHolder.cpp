@@ -82,19 +82,16 @@ void GUIHolder::m_addComponentButton(const std::string & name,
 	}
 	int buttonSize = JSONHolder::get()["settings"]["componentPanel"]
 		["button"]["size"];
-	int buttonBorders = JSONHolder::get()["settings"]["componentPanel"]
-		["button"]["borders"];
 	int spacing = JSONHolder::get()["settings"]["componentPanel"]
 		["spacing"];
 	auto button = tgui::Button::create();
 	button->setSize(buttonSize, buttonSize);
-	button->getRenderer()->setTexture(TextureHolder::get()[textureName]);
-	button->getRenderer()->setTextureHover(TextureHolder::get()[textureName]);
-	button->getRenderer()->setTextureDown(TextureHolder::get()[textureName]);
-	button->getRenderer()->setBorders(tgui::Borders(buttonBorders));
-	button->getRenderer()->setBorderColor(sf::Color(192, 192, 192, 215));
-	button->getRenderer()->setBorderColorHover(sf::Color(255, 255, 255));
-	button->getRenderer()->setBorderColorDown(sf::Color(128, 128, 128));
+	m_createComponentButtonTextures(textureName);
+	button->getRenderer()->setTexture(TextureHolder::get()["shelf/"
+		+ textureName]);
+	button->getRenderer()->setTextureHover(TextureHolder::get()[
+		"shelf/opened/" + textureName]);
+	button->getRenderer()->setBorders(tgui::Borders());
 	auto panel = m_gui.get<tgui::ScrollablePanel>("componentPanel");
 	int index = panel->getWidgets().size();
 	button->setPosition(spacing, buttonSize * index + spacing 
@@ -105,6 +102,32 @@ void GUIHolder::m_addComponentButton(const std::string & name,
 	panel->add(button);
 	panel->setContentSize(sf::Vector2f(spacing * 2 + buttonSize,
 		buttonSize * (index + 1) + spacing * (index + 2)));
+}
+
+void GUIHolder::m_createComponentButtonTextures(const std::string & name) {
+	int buttonSize = JSONHolder::get()["settings"]["componentPanel"]
+		["button"]["size"];
+	sf::RenderTexture renderTexture;
+	renderTexture.create(buttonSize, buttonSize);
+	sf::RectangleShape shelfRect(sf::Vector2f(buttonSize, buttonSize));
+	shelfRect.setTexture(&TextureHolder::get()["shelf"], true);
+	renderTexture.draw(shelfRect);
+	int picSize = JSONHolder::get()["settings"]["componentPanel"]["button"]
+		["picture size"];
+	sf::RectangleShape picRect(sf::Vector2f(picSize, picSize));
+	picRect.setTexture(&TextureHolder::get()[name], true);
+	picRect.setPosition((buttonSize - picSize) / 2, buttonSize - picSize
+		- 10);
+	renderTexture.draw(picRect);
+	renderTexture.display();
+	TextureHolder::get().set("shelf/" + name, renderTexture.getTexture());
+	shelfRect.setTexture(&TextureHolder::get()["shelf/" + name], true);
+	shelfRect.move(0, 10);
+	renderTexture.clear(sf::Color(128, 128, 128));
+	renderTexture.draw(shelfRect);
+	renderTexture.display();
+	TextureHolder::get().set("shelf/opened/" + name, renderTexture
+		.getTexture());
 }
 
 void GUIHolder::m_componentButtonSignal(const std::string & name) {

@@ -9,6 +9,7 @@ class GUIHolder {
 	void m_createComponentButtons();
 	void m_addComponentButton(const std::string & name,
 		const std::string & textureName = "");
+	void m_createComponentButtonTextures(const std::string & name);
 	void m_componentButtonSignal(const std::string & name);
 	void m_contextMenuSignal(const std::string & selectedItem);
 

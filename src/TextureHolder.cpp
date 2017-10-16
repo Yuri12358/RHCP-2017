@@ -26,3 +26,7 @@ sf::Texture & TextureHolder::operator[](const std::string & name) {
 	return m_textures[name];
 }
 
+void TextureHolder::set(const std::string & name, const sf::Texture & value) {
+	m_textures[name] = value;
+}
+
