@@ -55,9 +55,11 @@ void ComponentRenderer::m_drawWire(nlohmann::json & pin) {
 	nlohmann::json & parent = JSONHolder::get()["components"]
 		[parentID];
 
+	auto relPinPos = ComponentInfo::rotatePin(pin);
+
 	sf::Vector2f pos = sf::Vector2f(static_cast<int>(parent["position"]
-		["x"]) + static_cast<int>(pin["x"]), static_cast<int>(parent
-		["position"]["y"]) + static_cast<int>(pin["y"]));
+		["x"]) + relPinPos.x, static_cast<int>(parent
+		["position"]["y"]) + relPinPos.y);
 
 	wire[0].position = pos * float(cellsize);
 
@@ -77,9 +79,12 @@ void ComponentRenderer::m_drawWire(nlohmann::json & pin) {
 			conn["parentID"], conn["x"], conn["y"]);
 	}
 	nlohmann::json & otherPin = *otherPinPtr;
+
+	auto otherRelPinPos = ComponentInfo::rotatePin(otherPin);
+
 	sf::Vector2f otherPos = sf::Vector2f(static_cast<int>(other["position"]
-		["x"]) + static_cast<int>(otherPin["x"]), static_cast<int>(other
-		["position"]["y"]) + static_cast<int>(otherPin["y"]));
+		["x"]) + otherRelPinPos.x, static_cast<int>(other
+		["position"]["y"]) + otherRelPinPos.y);
 	
 	// There will be a lot of "if's"
 	
@@ -357,6 +362,7 @@ void ComponentRenderer::m_drawPins(nlohmann::json & component) {
 			}
 			sf::Vector2i relPos(static_cast<int>(pin["x"]),
 				static_cast<int>(pin["y"]));
+			relPos = ComponentInfo::rotatePin(pin);
 			pinShape.setPosition(sf::Vector2f((position + relPos) *
 				cellsize));
 			App::get().window().draw(pinShape);
@@ -370,14 +376,28 @@ void ComponentRenderer::m_drawPins(nlohmann::json & component) {
 
 void ComponentRenderer::drawComponent(nlohmann::json & component) {
 	int cellsize = JSONHolder::get()["settings"]["cellsize"];
+	int width = component["width"].get<int>();
+	int height = component["height"].get<int>();
 	sf::RectangleShape shape(sf::Vector2f(
-		static_cast<int>(component["width"]) * cellsize,
-		static_cast<int>(component["height"]) * cellsize));
+		static_cast<int>(width) * cellsize,
+		static_cast<int>(height) * cellsize));
+	shape.setRotation(component["rotation"].get<int>() * 90);
 	shape.setTexture(
 		&(TextureHolder::get()[component["texture"]]), true);
 	sf::Vector2i position(
 		static_cast<int>(component["position"]["x"]),
 		static_cast<int>(component["position"]["y"]));
+	switch (component["rotation"].get<int>()) {
+	case 1:
+		position.x += height;
+		break;
+	case 2:
+		position += sf::Vector2i(height, width);
+		break;
+	case 3:
+		position.y += width;
+		break;
+	}
 	shape.setPosition(sf::Vector2f(position * cellsize));
 	if (component.count("moving") == 1) {
 		shape.setOutlineThickness(-1);

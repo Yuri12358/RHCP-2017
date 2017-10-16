@@ -54,6 +54,7 @@ public:
 	void deleteSelectedComponent();
 	void deleteComponent(const std::string & id);
 	void moveSelectedComponent();
+	void rotateSelectedComponent();
 	void cancelMovingComponent();
 };
 

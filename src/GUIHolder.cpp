@@ -116,6 +116,7 @@ void GUIHolder::createContextMenu(int x, int y) {
 	auto list = tgui::ListBox::create();
 	list->setPosition(x, y);
 	list->addItem("Move");
+	list->addItem("Rotate");
 	list->addItem("Delete");
 	auto borders = list->getRenderer()->getBorders();
 	auto padding = list->getRenderer()->getPadding();
@@ -135,6 +136,8 @@ void GUIHolder::m_contextMenuSignal(const std::string & item) {
 	removeContextMenu();
 	if (item == "Move") {
 		App::get().moveSelectedComponent();
+	} else if (item == "Rotate") {
+		App::get().rotateSelectedComponent();
 	} else if (item == "Delete") {
 		App::get().deleteSelectedComponent();
 	}

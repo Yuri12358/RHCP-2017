@@ -94,6 +94,7 @@ void App::m_placeNewComponent(int pressX, int pressY) {
 		/ float(cellsize));
 	component["position"]["x"] = mouse.x;
 	component["position"]["y"] = mouse.y;
+	component["rotation"] = 0;
 	std::string currentType = component["type"];
 	if (currentType != "dot") {
 		for (nlohmann::json & pin : component["pins"]) {
@@ -466,5 +467,21 @@ void App::cancelMovingComponent() {
 	JSONHolder::get()["moving"] = nlohmann::json();
 	QuadTree::get().addObject(id);
 	History::get().abortModification();
+}
+
+void App::rotateSelectedComponent() {
+	History::get().beginModification();
+	std::string id = JSONHolder::get()["selected component ID"];
+	if (id == "") {
+		return;
+	}
+	if (!JSONHolder::get()["selected pin"].is_null()) {
+		m_deselectPin();
+	}
+	nlohmann::json & component = JSONHolder::get()["components"][id];
+	QuadTree::get().removeObject(id);
+	component["rotation"] = (1 + (component["rotation"].get<int>())) % 4;
+	QuadTree::get().addObject(id);
+	History::get().endModification();
 }
 
