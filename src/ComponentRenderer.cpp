@@ -392,7 +392,7 @@ void ComponentRenderer::drawComponent(nlohmann::json & component) {
 		position.x += height;
 		break;
 	case 2:
-		position += sf::Vector2i(height, width);
+		position += sf::Vector2i(width, height);
 		break;
 	case 3:
 		position.y += width;
@@ -403,8 +403,8 @@ void ComponentRenderer::drawComponent(nlohmann::json & component) {
 		shape.setOutlineThickness(-1);
 		if (QuadTree::get().intersects(ComponentInfo::getRect(component))
 			== "") {
-			shape.setOutlineColor(sf::Color(128, 128, 255));
-			shape.setFillColor(sf::Color(128, 128, 255, 128));
+			shape.setOutlineColor(sf::Color(128, 255, 128));
+			shape.setFillColor(sf::Color(128, 255, 128, 128));
 		} else {
 			shape.setOutlineColor(sf::Color::Red);
 			shape.setFillColor(sf::Color(255, 0, 0, 128));

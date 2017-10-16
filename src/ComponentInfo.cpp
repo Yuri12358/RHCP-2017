@@ -118,14 +118,14 @@ sf::Vector2i ComponentInfo::rotatePin(const nlohmann::json & pin) {
 	switch (component["rotation"].get<int>()) {
 	case 3:
 		relPos.x = ty;
-		relPos.y = getRect(component).width - tx;
+		relPos.y = component["width"].get<int>() - tx;
 		break;
 	case 2:
-		relPos.x = getRect(component).width - tx;
-		relPos.y = getRect(component).height - ty;
+		relPos.x = component["width"].get<int>() - tx;
+		relPos.y = component["height"].get<int>() - ty;
 		break;
 	case 1:
-		relPos.x = getRect(component).height - ty;
+		relPos.x = component["height"].get<int>() - ty;
 		relPos.y = tx;
 		break;
 	}
