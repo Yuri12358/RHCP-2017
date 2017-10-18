@@ -15,6 +15,7 @@ GUIHolder::GUIHolder()
 	tgui::Theme::setDefault(&m_theme);
 	m_createMenuBar();
 	m_createComponentSelector();
+	m_createFileNameLabel();
 }
 
 GUIHolder & GUIHolder::get() {
@@ -257,5 +258,23 @@ void GUIHolder::createSaveFileDialogWindow() {
 
 void GUIHolder::closeDialogWindow() {
 	m_gui.remove(m_gui.get("dialogWindow"));
+}
+
+void GUIHolder::updateFileName(const std::string & name) {
+	if (name == "") {
+		m_gui.get<tgui::Label>("fileName")->setText("~Untitled");
+	} else {
+		m_gui.get<tgui::Label>("fileName")->setText(name);
+	}
+}
+
+void GUIHolder::m_createFileNameLabel() {
+	auto label = tgui::Label::create();
+	m_gui.add(label, "fileName");
+	label->setSize(300, "menuBar.height");
+	label->setPosition("&.w - w - 5", 0);
+	label->setHorizontalAlignment(tgui::Label::HorizontalAlignment::Right);
+	label->setVerticalAlignment(tgui::Label::VerticalAlignment::Center);
+	updateFileName();
 }
 

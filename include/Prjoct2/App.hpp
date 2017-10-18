@@ -41,6 +41,7 @@ class App {
 	static App * s_instance;
 	sf::RenderWindow m_window;
 	sf::View m_fieldView;
+	std::string m_currentCircuitName;
 	int m_nextComponentID;
 	bool m_locked;
 

@@ -15,6 +15,7 @@ class GUIHolder {
 	void m_contextMenuSignal(const std::string & selectedItem);
 	void m_menuBarSignal(const std::vector<sf::String> & data);
 	void m_createDialogWindow();
+	void m_createFileNameLabel();
 
 	static GUIHolder * s_instance;
 	tgui::Gui m_gui;
@@ -28,6 +29,7 @@ public:
 	void createOpenFileDialogWindow();
 	void createSaveFileDialogWindow();
 	void closeDialogWindow();
+	void updateFileName(const std::string & name = "");
 };
 
 #endif // GUI_HOLDER_HPP

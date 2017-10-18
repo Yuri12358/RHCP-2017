@@ -503,6 +503,8 @@ void App::createNewCircuit() {
 	if (m_locked) {
 		return;
 	}
+	m_currentCircuitName = "";
+	GUIHolder::get().updateFileName();
 	History::get().clear();
 	QuadTree::get().removeAll();
 	JSONHolder::get()["components"].clear();
@@ -536,12 +538,18 @@ void App::openCircuit(const std::string & name) {
 	}
 	m_nextComponentID = maxNextID;
 	QuadTree::get().addAll();
+	m_currentCircuitName = name;
+	GUIHolder::get().updateFileName(name);
 	unlockUI();
 	GUIHolder::get().closeDialogWindow();
 }
 
 void App::saveCircuit() {
 	if (m_locked) {
+		return;
+	}
+	if (m_currentCircuitName != "") {
+		saveCircuit(m_currentCircuitName);
 		return;
 	}
 	GUIHolder::get().createSaveFileDialogWindow();
@@ -555,6 +563,8 @@ void App::saveCircuit(const std::string & name) {
 	for (auto byte : cbor) {
 		file.put(byte);
 	}
+	m_currentCircuitName = name;
+	GUIHolder::get().updateFileName(name);
 	unlockUI();
 	GUIHolder::get().closeDialogWindow();
 }
