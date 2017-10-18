@@ -5,13 +5,16 @@ objs_debug=$(patsubst src/%.cpp,debug/obj/%.o,$(wildcard src/*.cpp))
 libs=-ltgui -lsfml-graphics -lsfml-window -lsfml-system
 hdr=include/Prjoct2/
 
-all: bin obj debug debug/bin debug/obj $(bin) $(bin_debug)
+all: bin obj saves debug debug/bin debug/obj $(bin) $(bin_debug)
 
 bin:
 	mkdir bin
 
 obj:
 	mkdir obj
+
+saves:
+	mkdir saves
 
 debug:
 	mkdir debug

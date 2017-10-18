@@ -8,6 +8,7 @@
 #include<Prjoct2/App.hpp>
 #include<iostream>
 #include<iomanip>
+#include<fstream>
 
 App * App::s_instance = nullptr;
 
@@ -22,7 +23,8 @@ App::App()
 			: sf::Style::Default)
 	, m_nextComponentID()
 	, m_fieldView(sf::FloatRect(0, 0, m_window.getSize().x,
-		m_window.getSize().y)) {
+		m_window.getSize().y))
+	, m_locked() {
 	JSONHolder::get()["next component type"] = "dot";
 }
 
@@ -45,7 +47,8 @@ void App::m_handleEvents() {
 	sf::Event event;
 	while (m_window.pollEvent(event)) {
 		if (GUIHolder::get().gui().handleEvent(event) && event.type
-			!= sf::Event::KeyPressed) {
+			!= sf::Event::KeyPressed || m_locked && event.type
+			!= sf::Event::Closed) {
 			continue;
 		}
 		switch (event.type) {
@@ -75,6 +78,9 @@ void App::m_handleMouseReleaseEvent(const sf::Event::MouseButtonEvent & event) {
 }
 
 void App::m_selectComponent(int x, int y) {
+	if (m_locked) {
+		return;
+	}
 	sf::Vector2f mouse(mapToFieldCoords(sf::Vector2i(x, y)));
 	std::string id = QuadTree::get().getComponentID(mouse);
 	if (id == "") {
@@ -85,6 +91,9 @@ void App::m_selectComponent(int x, int y) {
 }
 
 void App::m_placeNewComponent(int pressX, int pressY) {
+	if (m_locked) {
+		return;
+	}
 	History::get().beginModification();
 	auto idString = std::to_string(m_nextComponentID);
 	auto & component = JSONHolder::get()["components"][idString];
@@ -253,6 +262,9 @@ void App::m_renderBackground() {
 }
 
 void App::m_update() {
+	if (m_locked) {
+		return;
+	}
 	m_updateFieldView();
 	m_updateMovingComponent();
 }
@@ -485,5 +497,69 @@ void App::rotateSelectedComponent() {
 	component["rotation"] = (1 + (component["rotation"].get<int>())) % 4;
 	QuadTree::get().addObject(id);
 	History::get().endModification();
+}
+
+void App::createNewCircuit() {
+	if (m_locked) {
+		return;
+	}
+	History::get().clear();
+	QuadTree::get().removeAll();
+	JSONHolder::get()["components"].clear();
+}
+
+void App::openCircuit() {
+	if (m_locked) {
+		return;
+	}
+	GUIHolder::get().createOpenFileDialogWindow();
+	m_locked = true;
+}
+
+void App::openCircuit(const std::string & name) {
+	std::ifstream file("saves/" + name + ".sav", std::ifstream::binary);
+	if (!file.is_open()) {
+		return;
+	}
+	file.seekg(0, file.end);
+	int size = file.tellg();
+	file.seekg(0);
+	std::vector<uint8_t> cbor(size);
+	for (auto & byte : cbor) {
+		byte = file.get();
+	}
+	int maxNextID = m_nextComponentID;
+	JSONHolder::get()["components"] = nlohmann::json::from_cbor(cbor);
+	for (const auto & component : JSONHolder::get()["components"]) {
+		int id = std::stoi(component["id"].get<std::string>());
+		maxNextID = std::max(id + 1, maxNextID);
+	}
+	m_nextComponentID = maxNextID;
+	QuadTree::get().addAll();
+	unlockUI();
+	GUIHolder::get().closeDialogWindow();
+}
+
+void App::saveCircuit() {
+	if (m_locked) {
+		return;
+	}
+	GUIHolder::get().createSaveFileDialogWindow();
+	m_locked = false;
+}
+
+void App::saveCircuit(const std::string & name) {
+	std::ofstream file("saves/" + name + ".sav", std::ofstream::binary);
+	const auto & cbor = nlohmann::json::to_cbor(
+		JSONHolder::get()["components"]);
+	for (auto byte : cbor) {
+		file.put(byte);
+	}
+	unlockUI();
+	GUIHolder::get().closeDialogWindow();
+}
+
+void App::unlockUI() {
+	m_locked = false;
 }
 

@@ -13,6 +13,7 @@ GUIHolder::GUIHolder()
 		["default theme"];
 	m_theme.load(defaultThemePath);
 	tgui::Theme::setDefault(&m_theme);
+	m_createMenuBar();
 	m_createComponentSelector();
 }
 
@@ -27,10 +28,25 @@ tgui::Gui & GUIHolder::gui() {
 	return m_gui;
 }
 
+void GUIHolder::m_createMenuBar() {
+	auto bar = tgui::MenuBar::create();
+	m_gui.add(bar, "menuBar");
+	bar->setSize("100%", JSONHolder::get()["settings"]["menuBar"]
+		["height"].get<int>());
+	bar->addMenu("File");
+	bar->addMenuItem("New");
+	bar->addMenuItem("Open");
+	bar->addMenuItem("Save");
+	std::function<void(const std::vector<sf::String> &)> signal
+		= std::bind(&GUIHolder::m_menuBarSignal, this, std::placeholders::_1);
+	bar->connect("menuItemClicked", signal);
+}
+
 void GUIHolder::m_createComponentSelector() {
 	tgui::ScrollablePanel::Ptr panel = tgui::ScrollablePanel::create();
 	m_gui.add(panel, "componentPanel");
-	panel->setSize(0, "100%");
+	panel->setSize(0, "100% - menuBar.size");
+	panel->setPosition("0", "menuBar.bottom");
 	tgui::Button::Ptr toggleButton = tgui::Button::create(">");
 	m_gui.add(toggleButton, "componentPanelToggleButton");
 	toggleButton->setSize(25, 25);
@@ -45,15 +61,18 @@ void GUIHolder::m_createComponentSelector() {
 				["componentPanel"]["spacing"];
 			m_gui.get<tgui::ScrollablePanel>("componentPanel")
 				->setSize(2 * spacing + buttonSize + 20,
-				"100%");
+				"100% - menuBar.size");
 		} else {
 			m_gui.get<tgui::Button>("componentPanelToggleButton")
 				->setText(">");
 			m_gui.get<tgui::ScrollablePanel>("componentPanel")
-				->setSize(0, "100%");
+				->setSize(0, "100% - menuBar.size");
 		}
 	});
 	m_createComponentButtons();
+	auto menu = m_gui.get<tgui::MenuBar>("menuBar");
+	m_gui.remove(menu);
+	m_gui.add(menu, "menuBar");
 }
 
 void GUIHolder::m_createComponentButtons() {
@@ -115,9 +134,12 @@ void GUIHolder::m_createComponentButtonTextures(const std::string & name) {
 	int picSize = JSONHolder::get()["settings"]["componentPanel"]["button"]
 		["picture size"];
 	sf::RectangleShape picRect(sf::Vector2f(picSize, picSize));
-	picRect.setTexture(&TextureHolder::get()[name], true);
+	picRect.setFillColor(sf::Color(255, 255, 255, 128));
 	picRect.setPosition((buttonSize - picSize) / 2, buttonSize - picSize
 		- 10);
+	renderTexture.draw(picRect);
+	picRect.setFillColor(sf::Color::White);
+	picRect.setTexture(&TextureHolder::get()[name], true);
 	renderTexture.draw(picRect);
 	renderTexture.display();
 	TextureHolder::get().set("shelf/" + name, renderTexture.getTexture());
@@ -169,5 +191,71 @@ void GUIHolder::m_contextMenuSignal(const std::string & item) {
 
 void GUIHolder::removeContextMenu() {
 	m_gui.remove(m_gui.get("contextMenu"));
+}
+
+void GUIHolder::m_menuBarSignal(const std::vector<sf::String> & data) {
+	if (data[0] == "File") {
+		if (data[1] == "New") {
+			App::get().createNewCircuit();
+		} else if (data[1] == "Open") {
+			App::get().openCircuit();
+		} else if (data[1] == "Save") {
+			App::get().saveCircuit();
+		}
+	}
+}
+
+void GUIHolder::m_createDialogWindow() {
+	auto dialogWindow = tgui::MessageBox::create();
+	m_gui.add(dialogWindow, "dialogWindow");
+	dialogWindow->setSize(400, 100);
+	dialogWindow->setTitleButtons(tgui::MessageBox::Close);
+	auto container = tgui::HorizontalLayout::create();
+	dialogWindow->add(container, "container");
+	int spacing = 8;
+	container->setSize(tgui::bindWidth(dialogWindow) - 2 * spacing, 25);
+	container->setPosition(spacing, tgui::bindHeight(dialogWindow)
+		- tgui::bindHeight(container) - spacing);
+	auto editBox = tgui::EditBox::create();
+	container->add(editBox, "editBox");
+	container->setRatio(editBox, 2);
+	editBox->setInputValidator("[a-zA-Z0-9_-]*");
+	auto button = tgui::Button::create("OK");
+	container->add(button, "button");
+	dialogWindow->setPosition(100, 200);
+	dialogWindow->connect("closed", [this] {
+		closeDialogWindow();
+		App::get().unlockUI();
+	});
+}
+
+void GUIHolder::createOpenFileDialogWindow() {
+	m_createDialogWindow();
+	auto dialogWindow = m_gui.get<tgui::MessageBox>("dialogWindow");
+	dialogWindow->setTitle("Open file");
+	dialogWindow->setText("Enter circuit name:");
+	auto container = dialogWindow->get<tgui::HorizontalLayout>("container");
+	auto button = container->get<tgui::Button>("button");
+	auto editBox = container->get<tgui::EditBox>("editBox");
+	button->connect("pressed", [editBox] {
+		App::get().openCircuit(editBox->getText());
+	});
+}
+
+void GUIHolder::createSaveFileDialogWindow() {
+	m_createDialogWindow();
+	auto dialogWindow = m_gui.get<tgui::MessageBox>("dialogWindow");
+	dialogWindow->setTitle("Save file");
+	dialogWindow->setText("Enter circuit name:");
+	auto container = dialogWindow->get<tgui::HorizontalLayout>("container");
+	auto button = container->get<tgui::Button>("button");
+	auto editBox = container->get<tgui::EditBox>("editBox");
+	button->connect("pressed", [editBox] {
+		App::get().saveCircuit(editBox->getText());
+	});
+}
+
+void GUIHolder::closeDialogWindow() {
+	m_gui.remove(m_gui.get("dialogWindow"));
 }
 

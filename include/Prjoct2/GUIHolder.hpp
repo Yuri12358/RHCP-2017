@@ -5,6 +5,7 @@
 
 class GUIHolder {
 	GUIHolder();
+	void m_createMenuBar();
 	void m_createComponentSelector();
 	void m_createComponentButtons();
 	void m_addComponentButton(const std::string & name,
@@ -12,6 +13,8 @@ class GUIHolder {
 	void m_createComponentButtonTextures(const std::string & name);
 	void m_componentButtonSignal(const std::string & name);
 	void m_contextMenuSignal(const std::string & selectedItem);
+	void m_menuBarSignal(const std::vector<sf::String> & data);
+	void m_createDialogWindow();
 
 	static GUIHolder * s_instance;
 	tgui::Gui m_gui;
@@ -22,6 +25,9 @@ public:
 	tgui::Gui & gui();
 	void createContextMenu(int x, int y);
 	void removeContextMenu();
+	void createOpenFileDialogWindow();
+	void createSaveFileDialogWindow();
+	void closeDialogWindow();
 };
 
 #endif // GUI_HOLDER_HPP

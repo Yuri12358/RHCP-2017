@@ -83,3 +83,9 @@ void History::HistoryEntry::redo() {
 	QuadTree::get().addAll();
 }
 
+void History::clear() {
+	m_entryList.clear();
+	m_redoList.clear();
+	m_modificationStarted = false;
+}
+

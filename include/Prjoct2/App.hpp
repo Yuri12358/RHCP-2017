@@ -3,8 +3,7 @@
 
 #include<Prjoct2/Debug.hpp>
 #include<SFML/Graphics.hpp>
-#include<nlohmann/json.hpp>
-
+#include<nlohmann/json.hpp> 
 class App {
 	App();
 	void m_handleEvents();
@@ -43,6 +42,7 @@ class App {
 	sf::RenderWindow m_window;
 	sf::View m_fieldView;
 	int m_nextComponentID;
+	bool m_locked;
 
 public:
 	static App & get();
@@ -56,6 +56,14 @@ public:
 	void moveSelectedComponent();
 	void rotateSelectedComponent();
 	void cancelMovingComponent();
+
+	void createNewCircuit();
+	void openCircuit();
+	void openCircuit(const std::string & name);
+	void saveCircuit();
+	void saveCircuit(const std::string & name);
+
+	void unlockUI();
 };
 
 #endif // APP_HPP

@@ -5,7 +5,7 @@
 		"width": 800,
 		"height": 600,
 		"title": "Test",
-		"fullscreen": true
+		"fullscreen": false
 	},
 	"componentPanel": {
 		"spacing": 5,
@@ -14,6 +14,9 @@
 			"borders": 5,
 			"picture size": 40
 		}
+	},
+	"menuBar": {
+		"height": 30
 	},
 	"components": [
 		{"name": "dot"},

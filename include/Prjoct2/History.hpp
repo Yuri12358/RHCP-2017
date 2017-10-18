@@ -31,6 +31,7 @@ public:
 	void endModification();
 	void undo();
 	void redo();
+	void clear();
 };
 
 #endif // HISTORY_HPP
