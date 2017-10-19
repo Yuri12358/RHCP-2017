@@ -5,6 +5,7 @@
 #include<Prjoct2/GUIHolder.hpp>
 #include<Prjoct2/QuadTree.hpp>
 #include<Prjoct2/History.hpp>
+#include<Prjoct2/Utility.hpp>
 #include<Prjoct2/App.hpp>
 #include<iostream>
 #include<iomanip>
@@ -74,7 +75,10 @@ void App::m_handleEvents() {
 
 void App::m_handleResizeEvent(const sf::Event::SizeEvent & event) {
 	m_defaultView.reset(sf::FloatRect(0, 0, event.width, event.height));
+	sf::Vector2f offset = (m_defaultView.getSize() - m_fieldView.getSize())
+		/ 2.f;
 	m_fieldView.setSize(m_defaultView.getSize());
+	m_fieldView.move(offset);
 	m_window.setView(m_defaultView);
 	GUIHolder::get().gui().setView(m_defaultView);
 }
@@ -214,6 +218,11 @@ void App::m_handleKeyEvent(const sf::Event::KeyEvent & event) {
 	case sf::Keyboard::Z:
 		m_handleZKeyPress(event);
 		break;
+	case sf::Keyboard::S:
+		std::cout << m_window.getSize() << " "
+			<< sf::Mouse::getPosition(m_window) << " "
+			<< mapToFieldCoords(sf::Mouse::getPosition(m_window))
+			<< '\n';
 	}
 }
 
