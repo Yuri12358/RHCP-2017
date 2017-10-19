@@ -11,6 +11,7 @@ class App {
 	void m_handleMouseReleaseEvent(const sf::Event::MouseButtonEvent & e);
 	void m_handleKeyEvent(const sf::Event::KeyEvent & event);
 	void m_handleZKeyPress(const sf::Event::KeyEvent & event);
+	void m_handleResizeEvent(const sf::Event::SizeEvent & event);
 
 	void m_undo();
 	void m_redo();
@@ -41,6 +42,7 @@ class App {
 	static App * s_instance;
 	sf::RenderWindow m_window;
 	sf::View m_fieldView;
+	sf::View m_defaultView;
 	std::string m_currentCircuitName;
 	int m_nextComponentID;
 	bool m_locked;

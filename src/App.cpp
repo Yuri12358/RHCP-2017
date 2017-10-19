@@ -24,6 +24,7 @@ App::App()
 	, m_nextComponentID()
 	, m_fieldView(sf::FloatRect(0, 0, m_window.getSize().x,
 		m_window.getSize().y))
+	, m_defaultView(m_window.getDefaultView())
 	, m_locked() {
 	JSONHolder::get()["next component type"] = "dot";
 }
@@ -64,8 +65,18 @@ void App::m_handleEvents() {
 		case sf::Event::MouseButtonReleased:
 			m_handleMouseReleaseEvent(event.mouseButton);
 			break;
+		case sf::Event::Resized:
+			m_handleResizeEvent(event.size);
+			break;
 		}
 	}
+}
+
+void App::m_handleResizeEvent(const sf::Event::SizeEvent & event) {
+	m_defaultView.reset(sf::FloatRect(0, 0, event.width, event.height));
+	m_fieldView.setSize(m_defaultView.getSize());
+	m_window.setView(m_defaultView);
+	GUIHolder::get().gui().setView(m_defaultView);
 }
 
 void App::m_handleMouseReleaseEvent(const sf::Event::MouseButtonEvent & event) {
@@ -312,7 +323,7 @@ void App::setFieldView() {
 }
 
 void App::resetView() {
-	m_window.setView(m_window.getDefaultView());
+	m_window.setView(m_defaultView);
 }
 
 void App::m_selectPin(int pressX, int pressY) {
