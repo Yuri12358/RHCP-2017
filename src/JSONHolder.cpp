@@ -3,8 +3,6 @@
 #include<stdexcept>
 #include<iomanip>
 
-const std::string confPath = "data/conf/";
-
 JSONHolder * JSONHolder::s_instance = nullptr;
 
 JSONHolder::JSONHolder() {
@@ -22,18 +20,21 @@ nlohmann::json & JSONHolder::operator[](const std::string & name) {
 	return m_jsons[name];
 }
 
-nlohmann::json & JSONHolder::fromFile(const std::string & filename) {
-	std::string fullname = confPath + filename + ".json";
+nlohmann::json & JSONHolder::fromFile(const std::string & filename,
+	bool useStandartPrefix, const std::string & name) {
+	std::string fullname = (useStandartPrefix ? "data/conf/" : "")
+		+ filename + ".json";
 	std::ifstream file(fullname);
 	if (!file.is_open()) {
 		throw std::runtime_error("JSON not found: '" + fullname + "'");
 	}
-	file >> m_jsons[filename];
-	return m_jsons[filename];
+	std::string realName = (name == "" ? filename : name);
+	file >> m_jsons[realName];
+	return m_jsons[realName];
 }
 
 void JSONHolder::save(const std::string & name) {
-	std::string fullname = confPath + name + ".json";
+	std::string fullname = "data/conf/" + name + ".json";
 	std::ofstream file(fullname);
 	file << std::setw(4) << m_jsons[name];
 }

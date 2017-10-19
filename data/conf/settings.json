@@ -1,5 +1,6 @@
 {
 	"cellsize": 20,
+	"resource pack": "default",
 	"default theme": "data/themes/TransparentGrey.txt",
 	"window": {
 		"width": 800,

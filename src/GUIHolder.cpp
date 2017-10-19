@@ -9,9 +9,15 @@ GUIHolder * GUIHolder::s_instance = nullptr;
 
 GUIHolder::GUIHolder()
 	: m_gui(App::get().window()) {
-	std::string defaultThemePath = JSONHolder::get()["settings"]
-		["default theme"];
-	m_theme.load(defaultThemePath);
+	std::string resourcePackName = JSONHolder::get()["settings"]
+		["resource pack"];
+	std::string resourcePackPath = "data/resources/" + resourcePackName
+		+ '/';
+	JSONHolder::get().fromFile(resourcePackPath + "conf", false, "resources/"
+		+ resourcePackName);
+	m_theme.load(resourcePackPath + "themes/" + JSONHolder::get()
+		["resources/" + resourcePackName]["theme"].get<std::string>()
+		+ ".txt");
 	tgui::Theme::setDefault(&m_theme);
 	m_createMenuBar();
 	m_createComponentSelector();

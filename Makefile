@@ -52,7 +52,8 @@ obj/App.o: src/App.cpp $(hdr)App.hpp \
 	g++ -c $< $(include_paths) -o $@
 	g++ -c -g $< $(include_paths) -o debug/$@
 
-obj/TextureHolder.o: src/TextureHolder.cpp $(hdr)TextureHolder.hpp
+obj/TextureHolder.o: src/TextureHolder.cpp $(hdr)TextureHolder.hpp \
+	obj/JSONHolder.o
 	g++ -c $< $(include_paths) -o $@
 	g++ -c -g $< $(include_paths) -o debug/$@
 
