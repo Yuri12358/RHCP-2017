@@ -83,8 +83,10 @@ void GUIHolder::m_createComponentSelector() {
 }
 
 void GUIHolder::m_createComponentButtons() {
-	for (nlohmann::json & entry : JSONHolder::get()["settings"]
-		["components"]) {
+	std::string resourcePackName = JSONHolder::get()["settings"]
+		["resource pack"];
+	for (nlohmann::json & entry : JSONHolder::get()["resources/"
+		+ resourcePackName]["components"]) {
 		std::string name = entry["name"];
 		if (entry.count("texture") == 1) {
 			m_addComponentButton(name, entry["texture"]

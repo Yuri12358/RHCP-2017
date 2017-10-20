@@ -1,4 +1,19 @@
 {
-	"theme": "TransparentGrey"
+	"theme": "TransparentGrey",
+	"components": [
+		{"name": "dot"},
+		{"name": "lamp"},
+		{"name": "battery"},
+		{"name": "resistor"},
+		{"name": "switch"},
+		{"name": "transistor"},
+		{"name": "rheostat"},
+		{"name": "bell"},
+		{"name": "ampermeter"},
+		{"name": "voltmeter"},
+		{"name": "diode"},
+		{"name": "electromagnet"},
+		{"name": "fuse"}
+	]
 }
 
