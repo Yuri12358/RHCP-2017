@@ -7,6 +7,10 @@
 template <typename T>
 std::ostream & operator<<(std::ostream & os, sf::Vector2<T> vec);
 
+std::string capitalize(std::string str);
+
+std::string toString(float num);
+
 #include<Prjoct2/Utility.inl>
 
 #endif // UTILITY_HPP

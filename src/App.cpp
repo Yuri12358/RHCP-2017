@@ -27,6 +27,8 @@ App::App()
 		m_window.getSize().y))
 	, m_defaultView(m_window.getDefaultView())
 	, m_locked() {
+	m_window.clear();
+	m_window.display();
 	JSONHolder::get()["next component type"] = "dot";
 }
 
@@ -180,6 +182,9 @@ void App::m_handleMousePressEvent(const sf::Event::MouseButtonEvent & event) {
 }
 
 void App::m_handleKeyEvent(const sf::Event::KeyEvent & event) {
+	if (!JSONHolder::get()["editing component ID"].is_null()) {
+		return;
+	}
 	GUIHolder::get().removeContextMenu();
 	switch (event.code) {
 	case sf::Keyboard::Escape:
@@ -250,17 +255,28 @@ void App::m_redo() {
 }
 
 bool App::m_cancelStartedAction() {
+	bool canceled = false;
 	if (!JSONHolder::get()["current"].is_null()) {
 		JSONHolder::get()["current"] = nlohmann::json();
-		return true;
-	} else if (!JSONHolder::get()["moving"].is_null()) {
-		cancelMovingComponent();
-		return true;
-	} else if (!JSONHolder::get()["selected pin"].is_null()) {
-		m_deselectPin();
-		return true;
+		canceled = true;
 	}
-	return false;
+	if (!JSONHolder::get()["moving"].is_null()) {
+		cancelMovingComponent();
+		canceled = true;
+	}
+	if (!JSONHolder::get()["selected pin"].is_null()) {
+		m_deselectPin();
+		canceled = true;
+	}
+	if (!JSONHolder::get()["editing component ID"].is_null()) {
+		GUIHolder::get().closeComponentPropertyEditor();
+		canceled = true;
+	}
+	if (!JSONHolder::get()["selected component ID"].is_null()) {
+		GUIHolder::get().removeContextMenu();
+		canceled = true;
+	}
+	return canceled;
 }
 
 void App::m_render() {
@@ -463,6 +479,11 @@ void App::deleteComponent(const std::string & id) {
 	QuadTree::get().removeObject(id);
 	JSONHolder::get()["components"].erase(id);
 	History::get().endModification();
+	if (!JSONHolder::get()["editing component ID"].is_null()
+		&& JSONHolder::get()["editing component ID"].get<std::string>()
+		== id) {
+		GUIHolder::get().closeComponentPropertyEditor();
+	}
 }
 
 void App::deleteSelectedComponent() {
@@ -528,6 +549,7 @@ void App::createNewCircuit() {
 	History::get().clear();
 	QuadTree::get().removeAll();
 	JSONHolder::get()["components"].clear();
+	m_cancelStartedAction();
 }
 
 void App::openCircuit() {
@@ -562,6 +584,7 @@ void App::openCircuit(const std::string & name) {
 	GUIHolder::get().updateFileName(name);
 	unlockUI();
 	GUIHolder::get().closeDialogWindow();
+	m_cancelStartedAction();
 }
 
 void App::saveCircuit() {
@@ -587,6 +610,7 @@ void App::saveCircuit(const std::string & name) {
 	GUIHolder::get().updateFileName(name);
 	unlockUI();
 	GUIHolder::get().closeDialogWindow();
+	m_cancelStartedAction();
 }
 
 void App::unlockUI() {

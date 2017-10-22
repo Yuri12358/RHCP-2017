@@ -87,6 +87,7 @@ obj/ComponentRenderer.o: src/ComponentRenderer.cpp $(hdr)ComponentRenderer.hpp \
 obj/GUIHolder.o: src/GUIHolder.cpp $(hdr)GUIHolder.hpp \
 	obj/TextureHolder.o \
 	obj/JSONHolder.o \
+	obj/Utility.o \
 	$(hdr)App.hpp
 	g++ -c $< $(include_paths) -o $@
 	g++ -c -g $< $(include_paths) -o debug/$@

@@ -1,6 +1,7 @@
 #include<Prjoct2/TextureHolder.hpp>
 #include<Prjoct2/JSONHolder.hpp>
 #include<Prjoct2/GUIHolder.hpp>
+#include<Prjoct2/Utility.hpp>
 #include<Prjoct2/App.hpp>
 #include<functional>
 #include<iostream>
@@ -13,8 +14,8 @@ GUIHolder::GUIHolder()
 		["resource pack"];
 	std::string resourcePackPath = "data/resources/" + resourcePackName
 		+ '/';
-	JSONHolder::get().fromFile(resourcePackPath + "conf", false, "resources/"
-		+ resourcePackName);
+	JSONHolder::get().fromFile(resourcePackPath + "conf", false,
+		"resources/" + resourcePackName);
 	m_theme.load(resourcePackPath + "themes/" + JSONHolder::get()
 		["resources/" + resourcePackName]["theme"].get<std::string>()
 		+ ".txt");
@@ -106,7 +107,8 @@ void GUIHolder::m_addComponentButton(const std::string & name,
 	if (requestedTextureName != "") {
 		textureName = requestedTextureName;
 	} else {
-		textureName = JSONHolder::get()["components/" + name]["texture"];
+		textureName = JSONHolder::get()["components/" + name]
+		["texture"];
 	}
 	int buttonSize = JSONHolder::get()["settings"]["componentPanel"]
 		["button"]["size"];
@@ -170,6 +172,7 @@ void GUIHolder::m_componentButtonSignal(const std::string & name) {
 void GUIHolder::createContextMenu(int x, int y) {
 	auto list = tgui::ListBox::create();
 	list->setPosition(x, y);
+	list->addItem("Edit");
 	list->addItem("Move");
 	list->addItem("Rotate");
 	list->addItem("Delete");
@@ -188,18 +191,109 @@ void GUIHolder::m_contextMenuSignal(const std::string & item) {
 	if (item == "") {
 		return;
 	}
-	removeContextMenu();
-	if (item == "Move") {
+	if (item == "Edit") {
+		m_createComponentPropertyEditor();
+	} else if (item == "Move") {
 		App::get().moveSelectedComponent();
 	} else if (item == "Rotate") {
 		App::get().rotateSelectedComponent();
 	} else if (item == "Delete") {
 		App::get().deleteSelectedComponent();
 	}
+	removeContextMenu();
+}
+
+void GUIHolder::m_createComponentPropertyEditor() {
+	JSONHolder::get()["editing component ID"]
+		= JSONHolder::get()["selected component ID"];
+	auto panel = tgui::Panel::create();
+	m_gui.add(panel, "componentPropertyEditor");
+	panel->setSize(JSONHolder::get()["settings"]["componentPropertyEditor"]
+		["width"].get<int>(), "100% - menuBar.height");
+	panel->setPosition("100% - width", "menuBar.bottom");
+	m_checkSelectedComponentProperties();
+	auto toggleButton = tgui::Button::create(">");
+	m_gui.add(toggleButton, "componentPropertyEditorToggleButton");
+	toggleButton->setSize("componentPanelToggleButton.size");
+	toggleButton->setPosition("componentPropertyEditor.left - width",
+		"componentPanelToggleButton.top");
+	std::function<void()> signal =  std::bind(&GUIHolder
+		::closeComponentPropertyEditor, this);
+	toggleButton->connect("pressed", signal);
+}
+
+void GUIHolder::closeComponentPropertyEditor() {
+	m_gui.remove(m_gui.get("componentPropertyEditorToggleButton"));
+	m_gui.remove(m_gui.get("componentPropertyEditor"));
+	JSONHolder::get()["editing component ID"] = nlohmann::json();
+}
+
+void GUIHolder::m_checkSelectedComponentProperties() {
+	auto panel = m_gui.get<tgui::Panel>("componentPropertyEditor");
+	auto & component = JSONHolder::get()["components"]
+		[JSONHolder::get()["editing component ID"]
+		.get<std::string>()];
+	if (component.count("properties") > 0) {
+		auto & settings = JSONHolder::get()["settings"]
+			["componentPropertyEditor"];
+		int spacing = settings["spacing"];
+		int entryHeight = settings["entry"]["height"];
+		std::map<std::string, nlohmann::json> propMap
+			= component["properties"];
+		for (auto it = propMap.begin(); it != propMap.end(); it++) {
+			std::string propName = it->first;
+			nlohmann::json & prop = it->second;
+			auto label = tgui::Label::create(capitalize(propName)
+				+ ":");
+			bool first = true;
+			tgui::Widget::Ptr lastWidget;
+			if (!panel->getWidgets().empty()) {
+				lastWidget = panel->getWidgets().back();
+				first = false;
+			}
+			panel->add(label);
+			if (first) {
+				label->setPosition(spacing, spacing);
+			} else {
+				label->setPosition(spacing, spacing
+					+ tgui::bindBottom(lastWidget));
+			}
+			label->setSize(tgui::bindWidth(panel) - spacing * 2,
+				entryHeight);
+			label->setVerticalAlignment(
+				tgui::Label::VerticalAlignment::Center);
+			auto editBox = tgui::EditBox::create();
+			panel->add(editBox);
+			editBox->setSize(tgui::bindSize(label));
+			editBox->setPosition(spacing, tgui::bindBottom(label)
+				+ spacing);
+			editBox->setDefaultText("0");
+			editBox->setText(toString(prop.get<float>()));
+			editBox->setInputValidator(tgui::EditBox
+				::Validator::Float);
+			std::function<void(sf::String)> signal = std
+				::bind(&GUIHolder
+				::m_componentPropertyEditorSignal, this,
+				std::placeholders::_1, propName);
+			editBox->connect("textChanged", signal);
+			editBox->getRenderer()->setCaretWidth(1);
+		}
+	}
+}
+
+void GUIHolder::m_componentPropertyEditorSignal(sf::String text,
+	std::string propName) {
+	if (text == "") {
+		text = "0";
+	}
+	auto & component = JSONHolder::get()["components"][JSONHolder::get()
+		["editing component ID"].get<std::string>()];
+	component["properties"][propName] = std::stof(text.toAnsiString());
 }
 
 void GUIHolder::removeContextMenu() {
 	m_gui.remove(m_gui.get("contextMenu"));
+	JSONHolder::get()["selected component ID"] = nlohmann::json();
 }
 
 void GUIHolder::m_menuBarSignal(const std::vector<sf::String> & data) {

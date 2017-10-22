@@ -16,6 +16,9 @@ class GUIHolder {
 	void m_menuBarSignal(const std::vector<sf::String> & data);
 	void m_createDialogWindow();
 	void m_createFileNameLabel();
+	void m_createComponentPropertyEditor();
+	void m_checkSelectedComponentProperties();
+	void m_componentPropertyEditorSignal(sf::String str, std::string prop);
 
 	static GUIHolder * s_instance;
 	tgui::Gui m_gui;
@@ -29,6 +32,7 @@ public:
 	void createOpenFileDialogWindow();
 	void createSaveFileDialogWindow();
 	void closeDialogWindow();
+	void closeComponentPropertyEditor();
 	void updateFileName(const std::string & name = "");
 };
 

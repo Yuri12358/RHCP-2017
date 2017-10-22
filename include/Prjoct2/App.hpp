@@ -7,7 +7,8 @@
 class App {
 	App();
 	void m_handleEvents();
-	void m_handleMousePressEvent(const sf::Event::MouseButtonEvent & event);
+	void m_handleMousePressEvent(const sf::Event::MouseButtonEvent
+		& event);
 	void m_handleMouseReleaseEvent(const sf::Event::MouseButtonEvent & e);
 	void m_handleKeyEvent(const sf::Event::KeyEvent & event);
 	void m_handleZKeyPress(const sf::Event::KeyEvent & event);
