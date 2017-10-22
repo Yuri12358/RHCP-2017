@@ -204,6 +204,9 @@ void GUIHolder::m_contextMenuSignal(const std::string & item) {
 }
 
 void GUIHolder::m_createComponentPropertyEditor() {
+	if (!JSONHolder::get()["editing component ID"].is_null()) {
+		closeComponentPropertyEditor();
+	}
 	JSONHolder::get()["editing component ID"]
 		= JSONHolder::get()["selected component ID"];
 	auto panel = tgui::Panel::create();
@@ -211,7 +214,26 @@ void GUIHolder::m_createComponentPropertyEditor() {
 	panel->setSize(JSONHolder::get()["settings"]["componentPropertyEditor"]
 		["width"].get<int>(), "100% - menuBar.height");
 	panel->setPosition("100% - width", "menuBar.bottom");
-	m_checkSelectedComponentProperties();
+	auto & settings = JSONHolder::get()["settings"]
+		["componentPropertyEditor"];
+	int spacing = settings["spacing"];
+	int entryHeight = settings["entry"]["height"];
+	auto typeLabel = tgui::Label::create("Type: " + JSONHolder::get()
+		["components"][JSONHolder::get()["editing component ID"]
+		.get<std::string>()]["type"].get<std::string>());
+	panel->add(typeLabel);
+	typeLabel->setPosition(spacing, spacing);
+	typeLabel->setSize(tgui::bindWidth(panel) - 2 * spacing, entryHeight);
+	typeLabel->setVerticalAlignment(typeLabel->VerticalAlignment::Center);
+	if (!m_checkSelectedComponentProperties()) {
+		auto noPropsLabel = tgui::Label::create("No properties");
+		panel->add(noPropsLabel);
+		noPropsLabel->setSize(tgui::bindSize(typeLabel));
+		noPropsLabel->setPosition(spacing, tgui::bindBottom(typeLabel)
+			+ spacing);
+		noPropsLabel->setVerticalAlignment(noPropsLabel
+			->VerticalAlignment::Center);
+	}
 	auto toggleButton = tgui::Button::create(">");
 	m_gui.add(toggleButton, "componentPropertyEditorToggleButton");
 	toggleButton->setSize("componentPanelToggleButton.size");
@@ -228,7 +250,8 @@ void GUIHolder::closeComponentPropertyEditor() {
 	JSONHolder::get()["editing component ID"] = nlohmann::json();
 }
 
-void GUIHolder::m_checkSelectedComponentProperties() {
+bool GUIHolder::m_checkSelectedComponentProperties() {
+	bool propertiesFound = false;
 	auto panel = m_gui.get<tgui::Panel>("componentPropertyEditor");
 	auto & component = JSONHolder::get()["components"]
 		[JSONHolder::get()["editing component ID"]
@@ -241,23 +264,16 @@ void GUIHolder::m_checkSelectedComponentProperties() {
 		std::map<std::string, nlohmann::json> propMap
 			= component["properties"];
 		for (auto it = propMap.begin(); it != propMap.end(); it++) {
+			propertiesFound = true;
 			std::string propName = it->first;
 			nlohmann::json & prop = it->second;
 			auto label = tgui::Label::create(capitalize(propName)
 				+ ":");
-			bool first = true;
 			tgui::Widget::Ptr lastWidget;
-			if (!panel->getWidgets().empty()) {
-				lastWidget = panel->getWidgets().back();
-				first = false;
-			}
+			lastWidget = panel->getWidgets().back();
 			panel->add(label);
-			if (first) {
-				label->setPosition(spacing, spacing);
-			} else {
-				label->setPosition(spacing, spacing
-					+ tgui::bindBottom(lastWidget));
-			}
+			label->setPosition(spacing, spacing
+				+ tgui::bindBottom(lastWidget));
 			label->setSize(tgui::bindWidth(panel) - spacing * 2,
 				entryHeight);
 			label->setVerticalAlignment(
@@ -279,6 +295,7 @@ void GUIHolder::m_checkSelectedComponentProperties() {
 			editBox->getRenderer()->setCaretWidth(1);
 		}
 	}
+	return propertiesFound;
 }
 
 void GUIHolder::m_componentPropertyEditorSignal(sf::String text,

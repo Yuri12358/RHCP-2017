@@ -17,7 +17,7 @@ class GUIHolder {
 	void m_createDialogWindow();
 	void m_createFileNameLabel();
 	void m_createComponentPropertyEditor();
-	void m_checkSelectedComponentProperties();
+	bool m_checkSelectedComponentProperties();
 	void m_componentPropertyEditorSignal(sf::String str, std::string prop);
 
 	static GUIHolder * s_instance;
