@@ -300,12 +300,13 @@ bool GUIHolder::m_checkSelectedComponentProperties() {
 
 void GUIHolder::m_componentPropertyEditorSignal(sf::String text,
 	std::string propName) {
-	if (text == "") {
-		text = "0";
-	}
 	auto & component = JSONHolder::get()["components"][JSONHolder::get()
 		["editing component ID"].get<std::string>()];
-	component["properties"][propName] = std::stof(text.toAnsiString());
+	try {
+		component["properties"][propName] = std::stof(text
+			.toAnsiString());
+	} catch (std::invalid_argument e) {
+	}
 }
 
 void GUIHolder::removeContextMenu() {
