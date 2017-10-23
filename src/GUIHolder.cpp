@@ -166,7 +166,7 @@ void GUIHolder::m_createComponentButtonTextures(const std::string & name) {
 void GUIHolder::m_componentButtonSignal(const std::string & name) {
 	JSONHolder::get()["current"] = JSONHolder::get()["components/" + name];
 	JSONHolder::get()["next component type"] = name;
-	App::get().cancelMovingComponent();
+	App::get().editor().cancelMovingComponent();
 }
 
 void GUIHolder::createContextMenu(int x, int y) {
@@ -194,11 +194,11 @@ void GUIHolder::m_contextMenuSignal(const std::string & item) {
 	if (item == "Edit") {
 		m_createComponentPropertyEditor();
 	} else if (item == "Move") {
-		App::get().moveSelectedComponent();
+		App::get().editor().moveSelectedComponent();
 	} else if (item == "Rotate") {
-		App::get().rotateSelectedComponent();
+		App::get().editor().rotateSelectedComponent();
 	} else if (item == "Delete") {
-		App::get().deleteSelectedComponent();
+		App::get().editor().deleteSelectedComponent();
 	}
 	removeContextMenu();
 }
@@ -317,11 +317,11 @@ void GUIHolder::removeContextMenu() {
 void GUIHolder::m_menuBarSignal(const std::vector<sf::String> & data) {
 	if (data[0] == "File") {
 		if (data[1] == "New") {
-			App::get().createNewCircuit();
+			App::get().editor().createNewCircuit();
 		} else if (data[1] == "Open") {
-			App::get().openCircuit();
+			App::get().editor().openCircuit();
 		} else if (data[1] == "Save") {
-			App::get().saveCircuit();
+			App::get().editor().saveCircuit();
 		}
 	}
 }
@@ -346,7 +346,7 @@ void GUIHolder::m_createDialogWindow() {
 	dialogWindow->setPosition(100, 200);
 	dialogWindow->connect("closed", [this] {
 		closeDialogWindow();
-		App::get().unlockUI();
+		App::get().editor().unlockUI();
 	});
 }
 
@@ -359,7 +359,7 @@ void GUIHolder::createOpenFileDialogWindow() {
 	auto button = container->get<tgui::Button>("button");
 	auto editBox = container->get<tgui::EditBox>("editBox");
 	button->connect("pressed", [editBox] {
-		App::get().openCircuit(editBox->getText());
+		App::get().editor().openCircuit(editBox->getText());
 	});
 }
 
@@ -372,7 +372,7 @@ void GUIHolder::createSaveFileDialogWindow() {
 	auto button = container->get<tgui::Button>("button");
 	auto editBox = container->get<tgui::EditBox>("editBox");
 	button->connect("pressed", [editBox] {
-		App::get().saveCircuit(editBox->getText());
+		App::get().editor().saveCircuit(editBox->getText());
 	});
 }
 

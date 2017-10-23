@@ -1,9 +1,9 @@
 #ifndef COMPONENT_INFO_HPP
 #define COMPONENT_INFO_HPP
 
+#include"Precomp.h"
+
 #include<Prjoct2/Direction.hpp>
-#include<SFML/Graphics.hpp>
-#include<nlohmann/json.hpp>
 
 class ComponentInfo {
 public:

@@ -1,9 +1,9 @@
 #ifndef COMPONENT_RENDERER_HPP
 #define COMPONENT_RENDERER_HPP
 
+#include"Precomp.h"
+
 #include<Prjoct2/Direction.hpp>
-#include<SFML/Graphics.hpp>
-#include<nlohmann/json.hpp>
 
 class ComponentRenderer {
 	ComponentRenderer();

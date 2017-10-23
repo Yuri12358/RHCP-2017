@@ -1,7 +1,8 @@
 #ifndef JSON_HOLDER_HPP
 #define JSON_HOLDER_HPP
 
-#include<nlohmann/json.hpp>
+#include"Precomp.h"
+
 #include<map>
 
 class JSONHolder {

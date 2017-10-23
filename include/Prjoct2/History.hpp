@@ -1,7 +1,8 @@
 #ifndef HISTORY_HPP
 #define HISTORY_HPP
 
-#include<nlohmann/json.hpp>
+#include<Prjoct2/Precomp.h>
+
 #include<memory>
 #include<list>
 

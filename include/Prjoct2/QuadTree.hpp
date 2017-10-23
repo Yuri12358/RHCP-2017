@@ -1,8 +1,8 @@
 #ifndef QUAD_TREE_HPP
 #define QUAD_TREE_HPP
 
-#include<SFML/Graphics.hpp>
-#include<nlohmann/json.hpp>
+#include<Prjoct2/Precomp.h>
+
 #include<string>
 
 class QuadTree {

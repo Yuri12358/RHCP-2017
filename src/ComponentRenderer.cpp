@@ -29,7 +29,7 @@ void ComponentRenderer::drawCurrent() {
 		static_cast<int>(current["height"]) * cellsize));
 	shape.setOutlineThickness(-1);
 	shape.setTexture(&(TextureHolder::get()[current["texture"]]), true);
-	sf::Vector2i mouse(App::get().mapToFieldCoords(
+	sf::Vector2i mouse(App::get().editor().mapToFieldCoords(
 		sf::Mouse::getPosition(App::get().window())));
 	sf::Vector2i position(mouse / cellsize);
 	sf::IntRect rect(position.x, position.y,

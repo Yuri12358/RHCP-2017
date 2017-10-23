@@ -1,7 +1,6 @@
 #include<Prjoct2/JSONHolder.hpp>
 #include<Prjoct2/QuadTree.hpp>
 #include<Prjoct2/History.hpp>
-#include<nlohmann/json.hpp>
 #include<stdexcept>
 #include<iostream>
 #include<iomanip>
