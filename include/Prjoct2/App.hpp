@@ -3,7 +3,6 @@
 
 #include"Precomp.h"
 
-#include<Prjoct2/Debug.hpp>
 #include<Prjoct2/EditorState.hpp>
 
 class App {

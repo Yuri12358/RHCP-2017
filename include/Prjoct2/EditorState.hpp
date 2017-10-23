@@ -2,6 +2,7 @@
 #define EDITOR_STATE_HPP
 
 #include<Prjoct2/State.hpp>
+#include<SFML/Graphics.hpp>
 
 class EditorState : public State {
 	void m_handleKeyEvent(sf::Event::KeyEvent event);

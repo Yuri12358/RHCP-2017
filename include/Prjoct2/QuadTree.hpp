@@ -3,6 +3,7 @@
 
 #include<Prjoct2/Precomp.h>
 
+#include<SFML/Graphics.hpp>
 #include<string>
 
 class QuadTree {

@@ -1,10 +1,5 @@
-#include<Prjoct2/ComponentInfo.hpp>
-#include<Prjoct2/EditorState.hpp>
 #include<Prjoct2/JSONHolder.hpp>
 #include<Prjoct2/GUIHolder.hpp>
-#include<Prjoct2/QuadTree.hpp>
-#include<Prjoct2/History.hpp>
-#include<Prjoct2/Utility.hpp>
 #include<Prjoct2/App.hpp>
 #include<iostream>
 #include<iomanip>
