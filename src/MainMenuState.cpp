@@ -1,13 +1,11 @@
+#include<Prjoct2/CorridorMenuState.hpp>
 #include<Prjoct2/TextureHolder.hpp>
-#include<Prjoct2/EditorState.hpp>
-#include<Prjoct2/GUIHolder.hpp>
 #include<Prjoct2/MainMenuState.hpp>
 #include<Prjoct2/Utility.hpp>
 #include<Prjoct2/App.hpp>
 
 MainMenuState::MainMenuState()
 	: m_bgTextureName("mainMenu") {
-	GUIHolder::get().clear();
 }
 
 void MainMenuState::handleEvent(sf::Event event) {
@@ -19,7 +17,8 @@ void MainMenuState::handleEvent(sf::Event event) {
 		break;
 	case sf::Event::MouseButtonPressed:
 		if (m_bgTextureName == "mainMenuButtonHover") {
-			App::get().m_state = std::make_shared<EditorState>();
+			App::get().m_state = std::make_shared
+				<CorridorMenuState>();
 		}
 		break;
 	}

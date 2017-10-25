@@ -3,12 +3,14 @@
 
 #include"Precomp.h"
 
-#include<Prjoct2/EditorState.hpp>
+#include<Prjoct2/CorridorMenuState.hpp>
 #include<Prjoct2/MainMenuState.hpp>
+#include<Prjoct2/EditorState.hpp>
 
 class App {
-	friend class EditorState;
+	friend class CorridorMenuState;
 	friend class MainMenuState;
+	friend class EditorState;
 
 	App();
 	void m_handleEvents();

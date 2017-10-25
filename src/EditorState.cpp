@@ -1,10 +1,10 @@
 #include<Prjoct2/ComponentRenderer.hpp>
+#include<Prjoct2/CorridorMenuState.hpp>
 #include<Prjoct2/ComponentInfo.hpp>
 #include<Prjoct2/TextureHolder.hpp>
 #include<Prjoct2/EditorState.hpp>
 #include<Prjoct2/JSONHolder.hpp>
 #include<Prjoct2/GUIHolder.hpp>
-#include<Prjoct2/MainMenuState.hpp>
 #include<Prjoct2/QuadTree.hpp>
 #include<Prjoct2/History.hpp>
 #include<Prjoct2/App.hpp>
@@ -38,7 +38,8 @@ void EditorState::m_handleKeyEvent(sf::Event::KeyEvent event) {
 	switch (event.code) {
 	case sf::Keyboard::Escape:
 		if (!m_cancelStartedAction()) {
-			App::get().m_state = std::make_shared<MainMenuState>();
+			App::get().m_state = std::make_shared
+				<CorridorMenuState>();
 		}
 		break;
 	case sf::Keyboard::Space:

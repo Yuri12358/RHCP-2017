@@ -45,9 +45,10 @@ obj/Main.o: src/Main.cpp \
 	g++ -c -g $< $(include_paths) -o debug/$@
 
 obj/App.o: src/App.cpp $(hdr)App.hpp \
+	$(hdr)CorridorMenuState.hpp \
+	$(hdr)MainMenuState.hpp \
 	$(hdr)EditorState.hpp \
 	$(hdr)JSONHolder.hpp \
-	$(hdr)MainMenuState.hpp \
 	$(hdr)GUIHolder.hpp
 	g++ -c $< $(include_paths) -o $@
 	g++ -c -g $< $(include_paths) -o debug/$@
@@ -113,11 +114,11 @@ obj/Utility.o: src/Utility.cpp $(hdr)Utility.hpp $(hdr)Utility.inl
 
 obj/EditorState.o: src/EditorState.cpp $(hdr)EditorState.hpp \
 	$(hdr)ComponentRenderer.hpp \
+	$(hdr)CorridorMenuState.hpp \
 	$(hdr)ComponentInfo.hpp \
 	$(hdr)TextureHolder.hpp \
 	$(hdr)JSONHolder.hpp \
 	$(hdr)GUIHolder.hpp \
-	$(hdr)MainMenuState.hpp \
 	$(hdr)QuadTree.hpp \
 	$(hdr)History.hpp \
 	$(hdr)State.hpp \
@@ -126,10 +127,19 @@ obj/EditorState.o: src/EditorState.cpp $(hdr)EditorState.hpp \
 	g++ -c -g $< $(include_paths) $(precomp_flag) -o debug/$@
 
 obj/MainMenuState.o: src/MainMenuState.cpp $(hdr)MainMenuState.hpp \
+	$(hdr)CorridorMenuState.hpp \
 	$(hdr)TextureHolder.hpp \
+	$(hdr)Utility.hpp \
+	$(hdr)State.hpp \
+	$(hdr)App.hpp
+	g++ -c $< $(include_paths) -o $@
+	g++ -c -g $< $(include_paths) -o debug/$@
+
+obj/CorridorMenuState.o: src/CorridorMenuState.cpp $(hdr)CorridorMenuState.hpp \
+	$(hdr)TextureHolder.hpp \
+	$(hdr)MainMenuState.hpp \
 	$(hdr)EditorState.hpp \
 	$(hdr)GUIHolder.hpp \
-	$(hdr)Utility.hpp \
 	$(hdr)State.hpp \
 	$(hdr)App.hpp
 	g++ -c $< $(include_paths) $(precomp_flag) -o $@
