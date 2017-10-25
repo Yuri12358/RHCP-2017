@@ -29,11 +29,11 @@ App & App::get() {
 }
 
 void App::run() {
-	m_state = std::make_shared<MainMenuState>();
+	m_states.push(std::make_shared<MainMenuState>());
 	while (m_window.isOpen()) {
 		m_handleEvents();
 		m_render();
-		m_state->update();
+		m_states.top()->update();
 	}
 }
 
@@ -56,7 +56,7 @@ void App::m_handleEvents() {
 			m_handleResizeEvent(event.size);
 			break;
 		default:
-			m_state->handleEvent(event);
+			m_states.top()->handleEvent(event);
 			break;
 		}
 	}
@@ -73,7 +73,7 @@ void App::m_handleResizeEvent(const sf::Event::SizeEvent & event) {
 
 void App::m_render() {
 	m_window.clear(sf::Color::White);
-	m_state->render();
+	m_states.top()->render();
 	GUIHolder::get().gui().draw();
 	m_window.display();
 }
@@ -84,7 +84,7 @@ sf::RenderWindow & App::window() {
 
 EditorState & App::editor() {
 	EditorState::Ptr editor = std::dynamic_pointer_cast<EditorState>
-		(m_state);
+		(m_states.top());
 	if (editor) {
 		return *editor;
 	}

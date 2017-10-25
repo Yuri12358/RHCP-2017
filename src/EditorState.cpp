@@ -1,5 +1,4 @@
 #include<Prjoct2/ComponentRenderer.hpp>
-#include<Prjoct2/CorridorMenuState.hpp>
 #include<Prjoct2/ComponentInfo.hpp>
 #include<Prjoct2/TextureHolder.hpp>
 #include<Prjoct2/EditorState.hpp>
@@ -17,6 +16,10 @@ EditorState::EditorState()
 	, m_nextComponentID() {
 	GUIHolder::get().initEditorGUI();
 	createNewCircuit();
+}
+
+EditorState::~EditorState() {
+	GUIHolder::get().clear();
 }
 
 void EditorState::handleEvent(sf::Event event) {
@@ -38,8 +41,7 @@ void EditorState::m_handleKeyEvent(sf::Event::KeyEvent event) {
 	switch (event.code) {
 	case sf::Keyboard::Escape:
 		if (!m_cancelStartedAction()) {
-			App::get().m_state = std::make_shared
-				<CorridorMenuState>();
+			App::get().m_states.pop();
 		}
 		break;
 	case sf::Keyboard::Space:

@@ -6,6 +6,7 @@
 #include<Prjoct2/CorridorMenuState.hpp>
 #include<Prjoct2/MainMenuState.hpp>
 #include<Prjoct2/EditorState.hpp>
+#include<stack>
 
 class App {
 	friend class CorridorMenuState;
@@ -21,7 +22,7 @@ class App {
 	sf::RenderWindow m_window;
 	sf::View m_defaultView;
 	std::string m_currentCircuitName;
-	State::Ptr m_state;
+	std::stack<State::Ptr> m_states;
 
 public:
 	static App & get();

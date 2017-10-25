@@ -32,6 +32,7 @@ public:
 	typedef std::shared_ptr<EditorState> Ptr;
 
 	EditorState();
+	~EditorState();
 	void handleEvent(sf::Event event);
 	void render();
 	void update();

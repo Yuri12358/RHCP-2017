@@ -1,19 +1,17 @@
-#ifndef MENU_STATE_HPP
-#define MENU_STATE_HPP
+#ifndef MAIN_MENU_STATE_HPP
+#define MAIN_MENU_STATE_HPP
 
-#include<Prjoct2/State.hpp>
+#include<Prjoct2/MenuState.hpp>
 
-class MainMenuState : public State {
-	std::string m_bgTextureName;
-
+class MainMenuState : public MenuState {
 public:
 	typedef std::shared_ptr<MainMenuState> Ptr;
 
 	MainMenuState();
 	void handleEvent(sf::Event event);
-	void render();
 	void update();
+	void render();
 };
 
-#endif // MENU_STATE_HPP
+#endif // MAIN_MENU_STATE_HPP
 

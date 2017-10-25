@@ -5,7 +5,7 @@
 #include<Prjoct2/App.hpp>
 
 MainMenuState::MainMenuState()
-	: m_bgTextureName("mainMenu") {
+	: MenuState("mainMenu") {
 }
 
 void MainMenuState::handleEvent(sf::Event event) {
@@ -16,33 +16,25 @@ void MainMenuState::handleEvent(sf::Event event) {
 		}
 		break;
 	case sf::Event::MouseButtonPressed:
-		if (m_bgTextureName == "mainMenuButtonHover") {
-			App::get().m_state = std::make_shared
-				<CorridorMenuState>();
+		if (m_data == "mainMenuButtonHover") {
+			App::get().m_states.push(std::make_shared
+				<CorridorMenuState>());
 		}
 		break;
 	}
 }
 
 void MainMenuState::update() {
-	sf::Vector2f size(TextureHolder::get()["mainMenu"].getSize());
-	sf::Vector2f ulCorner(220, 440);
-	sf::Vector2f drCorner(360, 550);
-	sf::FloatRect normalButtonRect(pairwiseDivide(ulCorner, size),
-		pairwiseDivide(drCorner - ulCorner, size));
-	sf::Vector2f normalMouse(pairwiseDivide(sf::Vector2f(sf::Mouse
-		::getPosition(App::get().m_window)), sf::Vector2f(App::get()
-		.m_window.getSize())));
-	if (normalButtonRect.contains(normalMouse)) {
-		m_bgTextureName = "mainMenuButtonHover";
+	if (m_checkTexturePartHover(220, 440, 360, 550)) {
+		m_data = "mainMenuButtonHover";
 	} else {
-		m_bgTextureName = "mainMenu";
+		m_data = "mainMenu";
 	}
 }
 
 void MainMenuState::render() {
-	sf::RectangleShape bg(sf::Vector2f(App::get().m_window.getSize()));
-	bg.setTexture(&TextureHolder::get()[m_bgTextureName], true);
-	App::get().m_window.draw(bg);
+	sf::RectangleShape bg(sf::Vector2f(App::get().window().getSize()));
+	bg.setTexture(&TextureHolder::get()[m_data], true);
+	App::get().window().draw(bg);
 }
 
