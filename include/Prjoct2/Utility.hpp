@@ -11,6 +11,9 @@ std::string capitalize(std::string str);
 
 std::string toString(float num);
 
+sf::Vector2f pairwiseDivide(sf::Vector2f a, sf::Vector2f b);
+sf::Vector2f pairwiseMultiply(sf::Vector2f a, sf::Vector2f b);
+
 #include<Prjoct2/Utility.inl>
 
 #endif // UTILITY_HPP

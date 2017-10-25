@@ -1,6 +1,8 @@
 #ifndef EDITOR_STATE_HPP
 #define EDITOR_STATE_HPP
 
+#include"Precomp.h"
+
 #include<Prjoct2/State.hpp>
 #include<SFML/Graphics.hpp>
 

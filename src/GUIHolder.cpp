@@ -20,9 +20,16 @@ GUIHolder::GUIHolder()
 		["resources/" + resourcePackName]["theme"].get<std::string>()
 		+ ".txt");
 	tgui::Theme::setDefault(&m_theme);
+}
+
+void GUIHolder::initEditorGUI() {
 	m_createMenuBar();
 	m_createComponentSelector();
 	m_createFileNameLabel();
+}
+
+void GUIHolder::clear() {
+	m_gui.removeAllWidgets();
 }
 
 GUIHolder & GUIHolder::get() {

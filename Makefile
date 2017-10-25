@@ -47,6 +47,7 @@ obj/Main.o: src/Main.cpp \
 obj/App.o: src/App.cpp $(hdr)App.hpp \
 	$(hdr)EditorState.hpp \
 	$(hdr)JSONHolder.hpp \
+	$(hdr)MainMenuState.hpp \
 	$(hdr)GUIHolder.hpp
 	g++ -c $< $(include_paths) -o $@
 	g++ -c -g $< $(include_paths) -o debug/$@
@@ -116,8 +117,19 @@ obj/EditorState.o: src/EditorState.cpp $(hdr)EditorState.hpp \
 	$(hdr)TextureHolder.hpp \
 	$(hdr)JSONHolder.hpp \
 	$(hdr)GUIHolder.hpp \
+	$(hdr)MainMenuState.hpp \
 	$(hdr)QuadTree.hpp \
 	$(hdr)History.hpp \
+	$(hdr)State.hpp \
+	$(hdr)App.hpp
+	g++ -c $< $(include_paths) $(precomp_flag) -o $@
+	g++ -c -g $< $(include_paths) $(precomp_flag) -o debug/$@
+
+obj/MainMenuState.o: src/MainMenuState.cpp $(hdr)MainMenuState.hpp \
+	$(hdr)TextureHolder.hpp \
+	$(hdr)EditorState.hpp \
+	$(hdr)GUIHolder.hpp \
+	$(hdr)Utility.hpp \
 	$(hdr)State.hpp \
 	$(hdr)App.hpp
 	g++ -c $< $(include_paths) $(precomp_flag) -o $@

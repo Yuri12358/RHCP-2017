@@ -4,6 +4,7 @@
 #include<Prjoct2/EditorState.hpp>
 #include<Prjoct2/JSONHolder.hpp>
 #include<Prjoct2/GUIHolder.hpp>
+#include<Prjoct2/MainMenuState.hpp>
 #include<Prjoct2/QuadTree.hpp>
 #include<Prjoct2/History.hpp>
 #include<Prjoct2/App.hpp>
@@ -14,6 +15,8 @@ EditorState::EditorState()
 	, m_fieldView(sf::FloatRect(0, 0, App::get().m_window.getSize().x,
 		App::get().m_window.getSize().y))
 	, m_nextComponentID() {
+	GUIHolder::get().initEditorGUI();
+	createNewCircuit();
 }
 
 void EditorState::handleEvent(sf::Event event) {
@@ -35,7 +38,7 @@ void EditorState::m_handleKeyEvent(sf::Event::KeyEvent event) {
 	switch (event.code) {
 	case sf::Keyboard::Escape:
 		if (!m_cancelStartedAction()) {
-			App::get().m_window.close();
+			App::get().m_state = std::make_shared<MainMenuState>();
 		}
 		break;
 	case sf::Keyboard::Space:

@@ -29,7 +29,7 @@ App & App::get() {
 }
 
 void App::run() {
-	m_state = std::make_shared<EditorState>();
+	m_state = std::make_shared<MainMenuState>();
 	while (m_window.isOpen()) {
 		m_handleEvents();
 		m_render();
@@ -40,11 +40,14 @@ void App::run() {
 void App::m_handleEvents() {
 	sf::Event event;
 	while (m_window.pollEvent(event)) {
-		if (GUIHolder::get().gui().handleEvent(event) && event.type
-			!= sf::Event::KeyPressed || editor().isUILocked()
-			&& event.type != sf::Event::Closed) {
-			continue;
-		}
+		try {
+			if (GUIHolder::get().gui().handleEvent(event) 
+				&& event.type != sf::Event::KeyPressed
+				|| editor().isUILocked() && event.type
+				!= sf::Event::Closed) {
+				continue;
+			}
+		} catch (std::logic_error e) {}
 		switch (event.type) {
 		case sf::Event::Closed:
 			m_window.close();

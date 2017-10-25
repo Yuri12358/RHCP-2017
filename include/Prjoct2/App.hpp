@@ -4,9 +4,11 @@
 #include"Precomp.h"
 
 #include<Prjoct2/EditorState.hpp>
+#include<Prjoct2/MainMenuState.hpp>
 
 class App {
 	friend class EditorState;
+	friend class MainMenuState;
 
 	App();
 	void m_handleEvents();

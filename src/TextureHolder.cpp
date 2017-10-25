@@ -23,11 +23,13 @@ sf::Texture & TextureHolder::operator[](const std::string & name) {
 			throw std::runtime_error("Failed to load texture: '"
 				+ name + "'");
 		}
+		m_textures[name].setSmooth(true);
 	}
 	return m_textures[name];
 }
 
 void TextureHolder::set(const std::string & name, const sf::Texture & value) {
 	m_textures[name] = value;
+	m_textures[name].setSmooth(true);
 }
 

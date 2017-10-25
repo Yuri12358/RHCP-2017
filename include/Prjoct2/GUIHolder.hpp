@@ -27,6 +27,8 @@ class GUIHolder {
 public:
 	static GUIHolder & get();
 	tgui::Gui & gui();
+	void initEditorGUI();
+	void clear();
 	void createContextMenu(int x, int y);
 	void removeContextMenu();
 	void createOpenFileDialogWindow();
