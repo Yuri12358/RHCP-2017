@@ -45,13 +45,13 @@ obj/Main.o: src/Main.cpp \
 	g++ -c -g $< $(include_paths) -o debug/$@
 
 obj/App.o: src/App.cpp $(hdr)App.hpp \
-	$(hdr)CorridorMenuState.hpp \
 	$(hdr)MainMenuState.hpp \
 	$(hdr)EditorState.hpp \
 	$(hdr)JSONHolder.hpp \
-	$(hdr)GUIHolder.hpp
-	g++ -c $< $(include_paths) -o $@
-	g++ -c -g $< $(include_paths) -o debug/$@
+	$(hdr)GUIHolder.hpp \
+	$(hdr)State.hpp
+	g++ -c $< $(include_paths) $(precomp_flag) -o $@
+	g++ -c -g $< $(include_paths) $(precomp_flag) -o debug/$@
 
 obj/TextureHolder.o: src/TextureHolder.cpp $(hdr)TextureHolder.hpp \
 	$(hdr)JSONHolder.hpp
@@ -114,7 +114,6 @@ obj/Utility.o: src/Utility.cpp $(hdr)Utility.hpp $(hdr)Utility.inl
 
 obj/EditorState.o: src/EditorState.cpp $(hdr)EditorState.hpp \
 	$(hdr)ComponentRenderer.hpp \
-	$(hdr)CorridorMenuState.hpp \
 	$(hdr)ComponentInfo.hpp \
 	$(hdr)TextureHolder.hpp \
 	$(hdr)JSONHolder.hpp \
@@ -126,9 +125,18 @@ obj/EditorState.o: src/EditorState.cpp $(hdr)EditorState.hpp \
 	g++ -c $< $(include_paths) $(precomp_flag) -o $@
 	g++ -c -g $< $(include_paths) $(precomp_flag) -o debug/$@
 
+obj/MenuState.o: src/MenuState.cpp $(hdr)MenuState.hpp \
+	$(hdr)TextureHolder.hpp \
+	$(hdr)Utility.hpp \
+	$(hdr)State.hpp \
+	$(hdr)App.hpp
+	g++ -c $< $(include_paths) $(precomp_flag) -o $@
+	g++ -c -g $< $(include_paths) $(precomp_flag) -o debug/$@
+
 obj/MainMenuState.o: src/MainMenuState.cpp $(hdr)MainMenuState.hpp \
 	$(hdr)CorridorMenuState.hpp \
 	$(hdr)TextureHolder.hpp \
+	$(hdr)MenuState.hpp \
 	$(hdr)Utility.hpp \
 	$(hdr)State.hpp \
 	$(hdr)App.hpp
@@ -136,10 +144,39 @@ obj/MainMenuState.o: src/MainMenuState.cpp $(hdr)MainMenuState.hpp \
 	g++ -c -g $< $(include_paths) -o debug/$@
 
 obj/CorridorMenuState.o: src/CorridorMenuState.cpp $(hdr)CorridorMenuState.hpp \
+	$(hdr)Form5CorridorMenuState.hpp \
+	$(hdr)Form9CorridorMenuState.hpp \
+	$(hdr)Form11CorridorMenuState.hpp \
 	$(hdr)TextureHolder.hpp \
-	$(hdr)MainMenuState.hpp \
+	$(hdr)MenuState.hpp \
+	$(hdr)Utility.hpp \
+	$(hdr)State.hpp \
+	$(hdr)App.hpp
+	g++ -c $< $(include_paths) $(precomp_flag) -o $@
+	g++ -c -g $< $(include_paths) $(precomp_flag) -o debug/$@
+
+obj/Form5CorridorMenuState.o: src/Form5CorridorMenuState.cpp $(hdr)Form5CorridorMenuState.hpp \
+	$(hdr)TextureHolder.hpp \
 	$(hdr)EditorState.hpp \
-	$(hdr)GUIHolder.hpp \
+	$(hdr)MenuState.hpp \
+	$(hdr)State.hpp \
+	$(hdr)App.hpp
+	g++ -c $< $(include_paths) $(precomp_flag) -o $@
+	g++ -c -g $< $(include_paths) $(precomp_flag) -o debug/$@
+
+obj/Form9CorridorMenuState.o: src/Form9CorridorMenuState.cpp $(hdr)Form9CorridorMenuState.hpp \
+	$(hdr)TextureHolder.hpp \
+	$(hdr)EditorState.hpp \
+	$(hdr)MenuState.hpp \
+	$(hdr)State.hpp \
+	$(hdr)App.hpp
+	g++ -c $< $(include_paths) $(precomp_flag) -o $@
+	g++ -c -g $< $(include_paths) $(precomp_flag) -o debug/$@
+
+obj/Form11CorridorMenuState.o: src/Form11CorridorMenuState.cpp $(hdr)Form11CorridorMenuState.hpp \
+	$(hdr)TextureHolder.hpp \
+	$(hdr)EditorState.hpp \
+	$(hdr)MenuState.hpp \
 	$(hdr)State.hpp \
 	$(hdr)App.hpp
 	g++ -c $< $(include_paths) $(precomp_flag) -o $@
