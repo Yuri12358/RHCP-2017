@@ -2,12 +2,13 @@
 #define MENU_STATE_HPP
 
 #include<Prjoct2/State.hpp>
+#include<SFML/Graphics.hpp>
 
 class MenuState : public State {
 protected:
 	std::string m_data;
 
-	bool m_checkTexturePartHover(int left, int top, int right, int bottom);
+	bool m_checkTexturePartHover(sf::FloatRect rect);
 
 public:
 	typedef std::shared_ptr<MenuState> Ptr;

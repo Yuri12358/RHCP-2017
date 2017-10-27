@@ -2,8 +2,8 @@
 	"cellsize": 20,
 	"resource pack": "default",
 	"window": {
-		"width": 600,
-		"height": 400,
+		"width": 800,
+		"height": 600,
 		"title": "Test",
 		"fullscreen": false
 	},

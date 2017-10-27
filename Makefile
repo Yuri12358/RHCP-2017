@@ -144,9 +144,9 @@ obj/MainMenuState.o: src/MainMenuState.cpp $(hdr)MainMenuState.hpp \
 	g++ -c -g $< $(include_paths) -o debug/$@
 
 obj/CorridorMenuState.o: src/CorridorMenuState.cpp $(hdr)CorridorMenuState.hpp \
-	$(hdr)Form5CorridorMenuState.hpp \
-	$(hdr)Form9CorridorMenuState.hpp \
-	$(hdr)Form11CorridorMenuState.hpp \
+	$(hdr)Form5MenuState.hpp \
+	$(hdr)Form9MenuState.hpp \
+	$(hdr)Form11MenuState.hpp \
 	$(hdr)TextureHolder.hpp \
 	$(hdr)MenuState.hpp \
 	$(hdr)Utility.hpp \
@@ -155,7 +155,7 @@ obj/CorridorMenuState.o: src/CorridorMenuState.cpp $(hdr)CorridorMenuState.hpp \
 	g++ -c $< $(include_paths) $(precomp_flag) -o $@
 	g++ -c -g $< $(include_paths) $(precomp_flag) -o debug/$@
 
-obj/Form5CorridorMenuState.o: src/Form5CorridorMenuState.cpp $(hdr)Form5CorridorMenuState.hpp \
+obj/Form5MenuState.o: src/Form5MenuState.cpp $(hdr)Form5MenuState.hpp \
 	$(hdr)TextureHolder.hpp \
 	$(hdr)EditorState.hpp \
 	$(hdr)MenuState.hpp \
@@ -164,7 +164,7 @@ obj/Form5CorridorMenuState.o: src/Form5CorridorMenuState.cpp $(hdr)Form5Corridor
 	g++ -c $< $(include_paths) $(precomp_flag) -o $@
 	g++ -c -g $< $(include_paths) $(precomp_flag) -o debug/$@
 
-obj/Form9CorridorMenuState.o: src/Form9CorridorMenuState.cpp $(hdr)Form9CorridorMenuState.hpp \
+obj/Form9MenuState.o: src/Form9MenuState.cpp $(hdr)Form9MenuState.hpp \
 	$(hdr)TextureHolder.hpp \
 	$(hdr)EditorState.hpp \
 	$(hdr)MenuState.hpp \
@@ -173,7 +173,7 @@ obj/Form9CorridorMenuState.o: src/Form9CorridorMenuState.cpp $(hdr)Form9Corridor
 	g++ -c $< $(include_paths) $(precomp_flag) -o $@
 	g++ -c -g $< $(include_paths) $(precomp_flag) -o debug/$@
 
-obj/Form11CorridorMenuState.o: src/Form11CorridorMenuState.cpp $(hdr)Form11CorridorMenuState.hpp \
+obj/Form11MenuState.o: src/Form11MenuState.cpp $(hdr)Form11MenuState.hpp \
 	$(hdr)TextureHolder.hpp \
 	$(hdr)EditorState.hpp \
 	$(hdr)MenuState.hpp \

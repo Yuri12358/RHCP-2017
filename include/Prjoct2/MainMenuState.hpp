@@ -4,6 +4,7 @@
 #include<Prjoct2/MenuState.hpp>
 
 class MainMenuState : public MenuState {
+	sf::FloatRect m_arrow;
 public:
 	typedef std::shared_ptr<MainMenuState> Ptr;
 

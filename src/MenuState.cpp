@@ -7,10 +7,10 @@ MenuState::MenuState(const std::string & data)
 	: m_data(data) {
 }
 
-bool MenuState::m_checkTexturePartHover(int l, int t, int r, int b) {
+bool MenuState::m_checkTexturePartHover(sf::FloatRect rect) {
 	sf::Vector2f size(TextureHolder::get()["mainMenu"].getSize());
-	sf::Vector2f ulCorner(l, t);
-	sf::Vector2f drCorner(r, b);
+	sf::Vector2f ulCorner(rect.left, rect.top);
+	sf::Vector2f drCorner(rect.width, rect.height);
 	sf::FloatRect normalButtonRect(pairwiseDivide(ulCorner, size),
 		pairwiseDivide(drCorner - ulCorner, size));
 	sf::Vector2f normalMouse(pairwiseDivide(sf::Vector2f(sf::Mouse

@@ -5,7 +5,8 @@
 #include<Prjoct2/App.hpp>
 
 MainMenuState::MainMenuState()
-	: MenuState("mainMenu") {
+	: MenuState("mainMenu")
+	, m_arrow(220, 440, 360, 550) {
 }
 
 void MainMenuState::handleEvent(sf::Event event) {
@@ -25,7 +26,7 @@ void MainMenuState::handleEvent(sf::Event event) {
 }
 
 void MainMenuState::update() {
-	if (m_checkTexturePartHover(220, 440, 360, 550)) {
+	if (m_checkTexturePartHover(m_arrow)) {
 		m_data = "mainMenuButtonHover";
 	} else {
 		m_data = "mainMenu";

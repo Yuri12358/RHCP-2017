@@ -1,3 +1,5 @@
+#include<Prjoct2/MainMenuState.hpp>
+#include<Prjoct2/EditorState.hpp>
 #include<Prjoct2/JSONHolder.hpp>
 #include<Prjoct2/GUIHolder.hpp>
 #include<Prjoct2/App.hpp>
