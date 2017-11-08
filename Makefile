@@ -183,5 +183,5 @@ obj/Form11MenuState.o: src/Form11MenuState.cpp $(hdr)Form11MenuState.hpp \
 	g++ -c -g $< $(include_paths) $(precomp_flag) -o debug/$@
 
 clear:
-	-rm bin/* obj/* debug/bin/* debug/obj/*
+	-rm bin/* obj/* debug/bin/* debug/obj/* $(precomp)
 
