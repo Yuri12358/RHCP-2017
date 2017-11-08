@@ -17,18 +17,18 @@ void CorridorMenuState::handleEvent(sf::Event event) {
 	switch (event.type) {
 	case sf::Event::KeyPressed:
 		if (event.key.code == sf::Keyboard::Escape) {
-			App::get().m_states.pop();
+			App::get().leaveState();
 		}
 		break;
 	case sf::Event::MouseButtonPressed:
 		if (m_data == "5") {
-			App::get().m_states.push(std::make_shared
+			App::get().enterState(std::make_shared
 				<Form5CorridorMenuState>());
 		} else if (m_data == "9") {
-			App::get().m_states.push(std::make_shared
+			App::get().enterState(std::make_shared
 				<Form9CorridorMenuState>());
 		} else if (m_data == "11") {
-			App::get().m_states.push(std::make_shared
+			App::get().enterState(std::make_shared
 				<Form11CorridorMenuState>());
 		}
 		break;
@@ -54,7 +54,7 @@ void CorridorMenuState::render() {
 	if (m_data == "") {
 		return;
 	}
-	sf::Vector2f winSize(App::get().m_window.getSize());
+	sf::Vector2f winSize(App::get().window().getSize());
 	sf::Vector2f bgSize(TextureHolder::get()["mainMenu"].getSize());
 	sf::Vector2f ulCorner(m_arrows[m_data].left, m_arrows[m_data].top);
 	sf::Vector2f drCorner(m_arrows[m_data].width, m_arrows[m_data].height);

@@ -94,3 +94,20 @@ EditorState & App::editor() {
 		"Attempt to get editor state that doesn't exist");
 }
 
+void App::enterState(State::Ptr state) {
+	m_states.push(state);
+}
+
+void App::setState(State::Ptr state) {
+	m_states.pop();
+	m_states.push(state);
+}
+
+void App::leaveState() {
+	m_states.pop();
+}
+
+const sf::View & App::defaultView() {
+	return m_defaultView;
+}
+

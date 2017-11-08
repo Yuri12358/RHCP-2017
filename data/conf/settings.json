@@ -1,6 +1,6 @@
 {
 	"cellsize": 20,
-	"resource pack": "default",
+	"default resource pack": "default",
 	"window": {
 		"width": 800,
 		"height": 600,

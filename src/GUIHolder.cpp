@@ -4,19 +4,38 @@
 #include<Prjoct2/Utility.hpp>
 #include<Prjoct2/App.hpp>
 #include<functional>
+#include<stdexcept>
 #include<iostream>
 
 GUIHolder * GUIHolder::s_instance = nullptr;
 
 GUIHolder::GUIHolder()
 	: m_gui(App::get().window()) {
-	std::string resourcePackName = JSONHolder::get()["settings"]
-		["resource pack"];
+	setResourcePack();
+}
+
+void GUIHolder::setResourcePack(std::string resourcePackName) {
+	if (resourcePackName.empty()) {
+		std::string defaultPack = JSONHolder::get()["settings"]
+			["default resource pack"];
+		resourcePackName = defaultPack;
+		JSONHolder::get()["settings"]["resource pack"] = defaultPack;
+	} else {
+		JSONHolder::get()["settings"]["default resource pack"]
+			= JSONHolder::get()["settings"]["resource pack"];
+		JSONHolder::get()["settings"]["resource pack"]
+			= resourcePackName;
+	}
 	std::string resourcePackPath = "data/resources/" + resourcePackName
 		+ '/';
-	JSONHolder::get().fromFile(resourcePackPath + "conf", false,
-		"resources/" + resourcePackName);
-	m_theme.load(resourcePackPath + "themes/" + JSONHolder::get()
+	try {
+		JSONHolder::get().fromFile(resourcePackPath + "conf", false,
+			"resources/" + resourcePackName);
+	} catch (std::runtime_error e) {
+		throw std::runtime_error("failed to find resource pack '"
+			+ resourcePackName + "'");
+	}
+	m_theme = tgui::Theme(resourcePackPath + "themes/" + JSONHolder::get()
 		["resources/" + resourcePackName]["theme"].get<std::string>()
 		+ ".txt");
 	tgui::Theme::setDefault(&m_theme);
@@ -53,7 +72,8 @@ void GUIHolder::m_createMenuBar() {
 	bar->addMenuItem("Open");
 	bar->addMenuItem("Save");
 	std::function<void(const std::vector<sf::String> &)> signal
-		= std::bind(&GUIHolder::m_menuBarSignal, this, std::placeholders::_1);
+		= std::bind(&GUIHolder::m_menuBarSignal, this, std::placeholders
+		::_1);
 	bar->connect("menuItemClicked", signal);
 }
 
@@ -127,6 +147,8 @@ void GUIHolder::m_addComponentButton(const std::string & name,
 	button->getRenderer()->setTexture(TextureHolder::get()["shelf/"
 		+ textureName]);
 	button->getRenderer()->setTextureHover(TextureHolder::get()[
+		"shelf/opened/" + textureName]);
+	button->getRenderer()->setTextureDown(TextureHolder::get()[
 		"shelf/opened/" + textureName]);
 	button->getRenderer()->setBorders(tgui::Borders());
 	auto panel = m_gui.get<tgui::ScrollablePanel>("componentPanel");

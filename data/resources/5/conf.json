@@ -1,0 +1,14 @@
+{
+	"theme": "BabyBlue",
+	"components": [
+		{"name": "dot"},
+		{"name": "lamp"},
+		{"name": "battery"},
+		{"name": "resistor"},
+		{"name": "switch"},
+		{"name": "bell"},
+		{"name": "ampermeter"},
+		{"name": "voltmeter"}
+	]
+}
+

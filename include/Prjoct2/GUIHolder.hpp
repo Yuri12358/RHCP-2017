@@ -27,6 +27,7 @@ class GUIHolder {
 public:
 	static GUIHolder & get();
 	tgui::Gui & gui();
+	void setResourcePack(std::string name = "");
 	void initEditorGUI();
 	void clear();
 	void createContextMenu(int x, int y);

@@ -9,11 +9,12 @@
 #include<Prjoct2/App.hpp>
 #include<fstream>
 
-EditorState::EditorState()
+EditorState::EditorState(const std::string & bg)
 	: m_locked()
-	, m_fieldView(sf::FloatRect(0, 0, App::get().m_window.getSize().x,
-		App::get().m_window.getSize().y))
-	, m_nextComponentID() {
+	, m_fieldView(sf::FloatRect(0, 0, App::get().window().getSize().x,
+		App::get().window().getSize().y))
+	, m_nextComponentID()
+	, m_bgTextureName(bg.empty() ? "background" : bg) {
 	GUIHolder::get().initEditorGUI();
 	createNewCircuit();
 }
@@ -41,7 +42,7 @@ void EditorState::m_handleKeyEvent(sf::Event::KeyEvent event) {
 	switch (event.code) {
 	case sf::Keyboard::Escape:
 		if (!m_cancelStartedAction()) {
-			App::get().m_states.pop();
+			App::get().leaveState();
 		}
 		break;
 	case sf::Keyboard::Space:
@@ -99,17 +100,17 @@ void EditorState::m_handleMousePressEvent(sf::Event::MouseButtonEvent event) {
 
 void EditorState::render() {
 	m_renderBackground();
-	App::get().m_window.setView(m_fieldView);
+	App::get().window().setView(m_fieldView);
 	m_renderComponents();
 	ComponentRenderer::get().drawCurrent();
-	App::get().m_window.setView(App::get().m_defaultView);
+	App::get().window().setView(App::get().defaultView());
 }
 
 void EditorState::m_renderBackground() {
-	sf::RectangleShape shape(sf::Vector2f(App::get().m_window.getSize()));
-	shape.setTexture(&TextureHolder::get()["background"], true);
+	sf::RectangleShape shape(sf::Vector2f(App::get().window().getSize()));
+	shape.setTexture(&TextureHolder::get()[m_bgTextureName], true);
 	shape.setFillColor(sf::Color(255, 255, 255, 192));
-	App::get().m_window.draw(shape);
+	App::get().window().draw(shape);
 }
 
 void EditorState::m_renderComponents() {
@@ -149,7 +150,7 @@ void EditorState::m_updateMovingComponent() {
 	nlohmann::json & component = JSONHolder::get()["components"][id];
 	int cellsize = JSONHolder::get()["settings"]["cellsize"];
 	sf::Vector2i mouse(mapToFieldCoords(sf::Mouse::getPosition(App::get()
-		.m_window)) / float(cellsize));
+		.window())) / float(cellsize));
 	component["position"]["x"] = mouse.x;
 	component["position"]["y"] = mouse.y;
 }
@@ -323,7 +324,7 @@ void EditorState::createNewCircuit() {
 	if (m_locked) {
 		return;
 	}
-	App::get().m_currentCircuitName = "";
+	m_currentCircuitName = "";
 	GUIHolder::get().updateFileName();
 	History::get().clear();
 	QuadTree::get().removeAll();
@@ -340,10 +341,14 @@ void EditorState::openCircuit() {
 }
 
 void EditorState::openCircuit(const std::string & name) {
+	if (name.empty()) {
+		return;
+	}
 	std::ifstream file("saves/" + name + ".sav", std::ifstream::binary);
 	if (!file.is_open()) {
 		return;
 	}
+	QuadTree::get().removeAll();
 	file.seekg(0, file.end);
 	int size = file.tellg();
 	file.seekg(0);
@@ -351,15 +356,15 @@ void EditorState::openCircuit(const std::string & name) {
 	for (auto & byte : cbor) {
 		byte = file.get();
 	}
-	int maxNextID = m_nextComponentID;
 	JSONHolder::get()["components"] = nlohmann::json::from_cbor(cbor);
+	int maxNextID = m_nextComponentID;
 	for (const auto & component : JSONHolder::get()["components"]) {
 		int id = std::stoi(component["id"].get<std::string>());
 		maxNextID = std::max(id + 1, maxNextID);
 	}
 	m_nextComponentID = maxNextID;
 	QuadTree::get().addAll();
-	App::get().m_currentCircuitName = name;
+	m_currentCircuitName = name;
 	GUIHolder::get().updateFileName(name);
 	unlockUI();
 	GUIHolder::get().closeDialogWindow();
@@ -370,8 +375,8 @@ void EditorState::saveCircuit() {
 	if (m_locked) {
 		return;
 	}
-	if (App::get().m_currentCircuitName != "") {
-		saveCircuit(App::get().m_currentCircuitName);
+	if (m_currentCircuitName != "") {
+		saveCircuit(m_currentCircuitName);
 		return;
 	}
 	GUIHolder::get().createSaveFileDialogWindow();
@@ -379,13 +384,16 @@ void EditorState::saveCircuit() {
 }
 
 void EditorState::saveCircuit(const std::string & name) {
+	if (name.empty()) {
+		return;
+	}
 	std::ofstream file("saves/" + name + ".sav", std::ofstream::binary);
 	const auto & cbor = nlohmann::json::to_cbor(
 		JSONHolder::get()["components"]);
 	for (auto byte : cbor) {
 		file.put(byte);
 	}
-	App::get().m_currentCircuitName = name;
+	m_currentCircuitName = name;
 	GUIHolder::get().updateFileName(name);
 	unlockUI();
 	GUIHolder::get().closeDialogWindow();
@@ -401,14 +409,14 @@ void EditorState::unlockUI() {
 }
 
 void EditorState::updateFieldView() {
-	sf::Vector2f offset = (App::get().m_defaultView.getSize() - m_fieldView
+	sf::Vector2f offset = (App::get().defaultView().getSize() - m_fieldView
 		.getSize()) / 2.f;
-	m_fieldView.setSize(App::get().m_defaultView.getSize());
+	m_fieldView.setSize(App::get().defaultView().getSize());
 	m_fieldView.move(offset);
 }
 
 sf::Vector2f EditorState::mapToFieldCoords(sf::Vector2i pixel) {
-	return App::get().m_window.mapPixelToCoords(pixel, m_fieldView);
+	return App::get().window().mapPixelToCoords(pixel, m_fieldView);
 }
 
 bool EditorState::m_cancelStartedAction() {

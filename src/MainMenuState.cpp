@@ -13,12 +13,12 @@ void MainMenuState::handleEvent(sf::Event event) {
 	switch (event.type) {
 	case sf::Event::KeyPressed:
 		if (event.key.code == sf::Keyboard::Escape) {
-			App::get().m_window.close();
+			App::get().window().close();
 		}
 		break;
 	case sf::Event::MouseButtonPressed:
 		if (m_data == "mainMenuButtonHover") {
-			App::get().m_states.push(std::make_shared
+			App::get().enterState(std::make_shared
 				<CorridorMenuState>());
 		}
 		break;

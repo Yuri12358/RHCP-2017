@@ -40,5 +40,26 @@ public:
 	void update();
 	void render();
 };
+
+class Form9ReferenceState : public MenuState {
+	sf::FloatRect m_button;
+
+public:
+	Form9ReferenceState();
+	void handleEvent(sf::Event event);
+	void update();
+	void render();
+};
+
+class Form9IntroState : public State {
+public:
+	typedef std::shared_ptr<Form9IntroState> Ptr;
+
+	Form9IntroState();
+	void handleEvent(sf::Event event);
+	void update();
+	void render();
+};
+
 #endif // FORM9_CORRIDOR_MENU_STATE_HPP
 

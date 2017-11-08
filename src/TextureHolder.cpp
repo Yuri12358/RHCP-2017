@@ -15,21 +15,25 @@ TextureHolder & TextureHolder::get() {
 }
 
 sf::Texture & TextureHolder::operator[](const std::string & name) {
-	if (m_textures.count(name) == 0) {
+	std::string nameWithTheme = JSONHolder::get()["settings"]
+		["resource pack"].get<std::string>() + "/" + name;
+	if (m_textures.count(nameWithTheme) == 0) {
 		std::string fullname = "data/resources/" + JSONHolder::get()
 			["settings"]["resource pack"].get<std::string>()
 			+ "/textures/" + name + ".png";
-		if (!m_textures[name].loadFromFile(fullname)) {
+		if (!m_textures[nameWithTheme].loadFromFile(fullname)) {
 			throw std::runtime_error("Failed to load texture: '"
 				+ name + "'");
 		}
-		m_textures[name].setSmooth(true);
+		m_textures[nameWithTheme].setSmooth(true);
 	}
-	return m_textures[name];
+	return m_textures[nameWithTheme];
 }
 
 void TextureHolder::set(const std::string & name, const sf::Texture & value) {
-	m_textures[name] = value;
-	m_textures[name].setSmooth(true);
+	std::string nameWithTheme = JSONHolder::get()["settings"]
+		["resource pack"].get<std::string>() + "/" + name;
+	m_textures[nameWithTheme] = value;
+	m_textures[nameWithTheme].setSmooth(true);
 }
 

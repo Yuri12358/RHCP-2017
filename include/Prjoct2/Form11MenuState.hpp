@@ -41,5 +41,15 @@ public:
 	void render();
 };
 
+class Form11ReferenceState : public MenuState {
+	sf::FloatRect m_button;
+
+public:
+	Form11ReferenceState();
+	void handleEvent(sf::Event event);
+	void update();
+	void render();
+};
+
 #endif // FORM11_CORRIDOR_MENU_STATE_HPP
 

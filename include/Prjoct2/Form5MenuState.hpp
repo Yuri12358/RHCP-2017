@@ -40,5 +40,18 @@ public:
 	void update();
 	void render();
 };
+
+class Form5IntroState : public MenuState {
+	std::map<std::string, sf::FloatRect> m_buttons;
+
+public:
+	typedef std::shared_ptr<Form5IntroState> Ptr;
+
+	Form5IntroState();
+	void handleEvent(sf::Event event);
+	void update();
+	void render();
+};
+
 #endif // FORM5_CORRIDOR_MENU_STATE_HPP
 

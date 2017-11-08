@@ -1,24 +1,27 @@
 #include<Prjoct2/Form5MenuState.hpp>
 #include<Prjoct2/TextureHolder.hpp>
 #include<Prjoct2/EditorState.hpp>
+#include<Prjoct2/GUIHolder.hpp>
 #include<Prjoct2/Utility.hpp>
 #include<Prjoct2/App.hpp>
 
 Form5CorridorMenuState::Form5CorridorMenuState()
-	: MenuState("5formCorridorMenu")
+	: MenuState("corridorMenu")
 	, m_door(445, 170, 580, 530) {
+	GUIHolder::get().setResourcePack("5");
 }
 
 void Form5CorridorMenuState::handleEvent(sf::Event event) {
 	switch (event.type) {
 	case sf::Event::KeyPressed:
 		if (event.key.code == sf::Keyboard::Escape) {
-			App::get().m_states.pop();
+			GUIHolder::get().setResourcePack();
+			App::get().leaveState();
 		}
 		break;
 	case sf::Event::MouseButtonPressed:
-		if (m_data == "5formCorridorMenuDoorHover") {
-			App::get().m_states.push(std::make_shared
+		if (m_data == "corridorMenuDoorHover") {
+			App::get().enterState(std::make_shared
 				<Form5ClassMenuState>());
 		}
 		break;
@@ -27,9 +30,9 @@ void Form5CorridorMenuState::handleEvent(sf::Event event) {
 
 void Form5CorridorMenuState::update() {
 	if (m_checkTexturePartHover(m_door)) {
-		m_data = "5formCorridorMenuDoorHover";
+		m_data = "corridorMenuDoorHover";
 	} else {
-		m_data = "5formCorridorMenu";
+		m_data = "corridorMenu";
 	}
 }
 
@@ -40,7 +43,7 @@ void Form5CorridorMenuState::render() {
 }
 
 Form5ClassMenuState::Form5ClassMenuState()
-	: MenuState("5formClassMenu") {
+	: MenuState("classMenu") {
 	m_arrows["desk"] = sf::FloatRect(470, 465, 550, 495);
 	m_arrows["back"] = sf::FloatRect(570, 480, 630, 550);
 }
@@ -49,15 +52,15 @@ void Form5ClassMenuState::handleEvent(sf::Event event) {
 	switch (event.type) {
 	case sf::Event::KeyPressed:
 		if (event.key.code == sf::Keyboard::Escape) {
-			App::get().m_states.pop();
+			App::get().leaveState();
 		}
 		break;
 	case sf::Event::MouseButtonPressed:
 		if (m_data == "desk") {
-			App::get().m_states.push(std::make_shared
+			App::get().enterState(std::make_shared
 				<Form5DeskMenuState>());
 		} else if (m_data == "back") {
-			App::get().m_states.pop();
+			App::get().leaveState();
 		}
 		break;
 	}
@@ -75,12 +78,12 @@ void Form5ClassMenuState::update() {
 
 void Form5ClassMenuState::render() {
 	sf::RectangleShape bg(sf::Vector2f(App::get().window().getSize()));
-	bg.setTexture(&TextureHolder::get()["5formClassMenu"], true);
+	bg.setTexture(&TextureHolder::get()["classMenu"], true);
 	App::get().window().draw(bg);
 	if (m_data == "") {
 		return;
 	}
-	sf::Vector2f winSize(App::get().m_window.getSize());
+	sf::Vector2f winSize(App::get().window().getSize());
 	sf::Vector2f bgSize(TextureHolder::get()["mainMenu"].getSize());
 	sf::Vector2f ulCorner(pairwiseMultiply(pairwiseDivide(sf::Vector2f(
 		m_arrows[m_data].left, m_arrows[m_data].top), bgSize),
@@ -91,11 +94,11 @@ void Form5ClassMenuState::render() {
 	sf::RectangleShape arrow(drCorner - ulCorner);
 	arrow.setPosition(ulCorner);
 	arrow.setFillColor(sf::Color(255, 255, 255, 128));
-	App::get().m_window.draw(arrow);
+	App::get().window().draw(arrow);
 }
 
 Form5DeskMenuState::Form5DeskMenuState()
-	: MenuState("5formDeskMenu") {
+	: MenuState("deskMenu") {
 	m_books["reference"] = sf::FloatRect(285, 290, 335, 355);
 	m_books["editor"] = sf::FloatRect(390, 285, 440, 350);
 	m_books["exercises"] = sf::FloatRect(500, 275, 560, 340);
@@ -105,13 +108,13 @@ void Form5DeskMenuState::handleEvent(sf::Event event) {
 	switch (event.type) {
 	case sf::Event::KeyPressed:
 		if (event.key.code == sf::Keyboard::Escape) {
-			App::get().m_states.pop();
+			App::get().leaveState();
 		}
 		break;
 	case sf::Event::MouseButtonPressed:
 		if (m_data == "editor") {
-			App::get().m_states.push(std::make_shared
-				<EditorState>());
+			App::get().enterState(std::make_shared
+				<Form5IntroState>());
 		}
 		break;
 	}
@@ -131,12 +134,12 @@ void Form5DeskMenuState::update() {
 
 void Form5DeskMenuState::render() {
 	sf::RectangleShape bg(sf::Vector2f(App::get().window().getSize()));
-	bg.setTexture(&TextureHolder::get()["5formDeskMenu"], true);
+	bg.setTexture(&TextureHolder::get()["deskMenu"], true);
 	App::get().window().draw(bg);
 	if (m_data == "") {
 		return;
 	}
-	sf::Vector2f winSize(App::get().m_window.getSize());
+	sf::Vector2f winSize(App::get().window().getSize());
 	sf::Vector2f bgSize(TextureHolder::get()["mainMenu"].getSize());
 	sf::Vector2f ulCorner(pairwiseMultiply(pairwiseDivide(sf::Vector2f(
 		m_books[m_data].left, m_books[m_data].top), bgSize),
@@ -147,6 +150,47 @@ void Form5DeskMenuState::render() {
 	sf::RectangleShape arrow(drCorner - ulCorner);
 	arrow.setPosition(ulCorner);
 	arrow.setFillColor(sf::Color(255, 255, 255, 128));
-	App::get().m_window.draw(arrow);
+	App::get().window().draw(arrow);
+}
+
+Form5IntroState::Form5IntroState()
+	: MenuState("intro") {
+	m_buttons["introGirlHover"] = sf::FloatRect(80, 490, 260, 550);
+	m_buttons["introBoyHover"] = sf::FloatRect(305, 490, 480, 545);
+}
+
+void Form5IntroState::handleEvent(sf::Event event) {
+	switch (event.type) {
+	case sf::Event::KeyPressed:
+		if (event.key.code == sf::Keyboard::Escape) {
+			App::get().leaveState();
+		}
+		break;
+	case sf::Event::MouseButtonPressed:
+		if (m_data == "introBoyHover") {
+			App::get().setState(std::make_shared
+				<EditorState>("backgroundBoy"));
+		} else if (m_data == "introGirlHover") {
+			App::get().setState(std::make_shared
+				<EditorState>("backgroundGirl"));
+		}
+		break;
+	}
+}
+
+void Form5IntroState::update() {
+	if (m_checkTexturePartHover(m_buttons["introGirlHover"])) {
+		m_data = "introGirlHover";
+	} else if (m_checkTexturePartHover(m_buttons["introBoyHover"])) {
+		m_data = "introBoyHover";
+	} else {
+		m_data = "intro";
+	}
+}
+
+void Form5IntroState::render() {
+	sf::RectangleShape bg(sf::Vector2f(App::get().window().getSize()));
+	bg.setTexture(&TextureHolder::get()[m_data], true);
+	App::get().window().draw(bg);
 }
 

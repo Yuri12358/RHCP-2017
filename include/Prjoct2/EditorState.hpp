@@ -25,13 +25,15 @@ class EditorState : public State {
 	void m_disconnectPin(nlohmann::json & pin);
 
 	sf::View m_fieldView;
+	std::string m_bgTextureName;
+	std::string m_currentCircuitName;
 	int m_nextComponentID;
 	bool m_locked;
 
 public:
 	typedef std::shared_ptr<EditorState> Ptr;
 
-	EditorState();
+	EditorState(const std::string & bg = "");
 	~EditorState();
 	void handleEvent(sf::Event event);
 	void render();
