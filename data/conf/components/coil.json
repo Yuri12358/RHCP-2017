@@ -1,8 +1,8 @@
 {
-	"type": "electromagnet",
+	"type": "coil",
 	"width": 2,
 	"height": 2,
-	"texture": "electromagnet",
+	"texture": "coil",
 	"pins": [
 		{
 			"x": 0,

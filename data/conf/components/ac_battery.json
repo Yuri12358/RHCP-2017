@@ -1,0 +1,20 @@
+{
+	"type": "ac_battery",
+	"width": 2,
+	"height": 2,
+	"texture": "ac_battery",
+	"pins": [
+		{
+			"x": 0,
+			"y": 1
+		},
+		{
+			"x": 2,
+			"y": 1
+		}
+	],
+	"properties": {
+		"voltage": 1
+	}
+}
+

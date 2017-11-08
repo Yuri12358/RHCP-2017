@@ -115,6 +115,9 @@ void Form5DeskMenuState::handleEvent(sf::Event event) {
 		if (m_data == "editor") {
 			App::get().enterState(std::make_shared
 				<Form5IntroState>());
+		} else if (m_data == "reference") {
+			App::get().enterState(std::make_shared
+				<Form5ChooseGenderState>());
 		}
 		break;
 	}
@@ -192,5 +195,94 @@ void Form5IntroState::render() {
 	sf::RectangleShape bg(sf::Vector2f(App::get().window().getSize()));
 	bg.setTexture(&TextureHolder::get()[m_data], true);
 	App::get().window().draw(bg);
+}
+
+Form5ChooseGenderState::Form5ChooseGenderState()
+	: MenuState("intro") {
+	m_buttons["chooseGenderGirlHover"] = sf::FloatRect(80, 490, 260, 550);
+	m_buttons["chooseGenderBoyHover"] = sf::FloatRect(305, 490, 480, 545);
+}
+
+void Form5ChooseGenderState::handleEvent(sf::Event event) {
+	switch (event.type) {
+	case sf::Event::KeyPressed:
+		if (event.key.code == sf::Keyboard::Escape) {
+			App::get().leaveState();
+		}
+		break;
+	case sf::Event::MouseButtonPressed:
+		if (m_data == "chooseGenderBoyHover") {
+			App::get().setState(std::make_shared
+				<Form5ReferenceState>("referenceBoy"));
+		} else if (m_data == "chooseGenderGirlHover") {
+			App::get().setState(std::make_shared
+				<Form5ReferenceState>("referenceGirl"));
+		}
+		break;
+	}
+}
+
+void Form5ChooseGenderState::update() {
+	if (m_checkTexturePartHover(m_buttons["chooseGenderGirlHover"])) {
+		m_data = "chooseGenderGirlHover";
+	} else if (m_checkTexturePartHover(m_buttons["chooseGenderBoyHover"])) {
+		m_data = "chooseGenderBoyHover";
+	} else {
+		m_data = "chooseGender";
+	}
+}
+
+void Form5ChooseGenderState::render() {
+	sf::RectangleShape bg(sf::Vector2f(App::get().window().getSize()));
+	bg.setTexture(&TextureHolder::get()[m_data], true);
+	App::get().window().draw(bg);
+}
+
+Form5ReferenceState::Form5ReferenceState(const std::string & bg)
+	: MenuState("deskMenu")
+	, m_button(755, 0, 785, 35)
+	, m_bgTextureName(bg) {
+}
+
+void Form5ReferenceState::handleEvent(sf::Event event) {
+	switch (event.type) {
+	case sf::Event::KeyPressed:
+		if (event.key.code == sf::Keyboard::Escape) {
+			App::get().leaveState();
+		}
+		break;
+	case sf::Event::MouseButtonPressed:
+		if (m_data == "close") {
+			App::get().leaveState();
+		}
+		break;
+	}
+}
+
+void Form5ReferenceState::update() {
+	if (m_checkTexturePartHover(m_button)) {
+		m_data = "close";
+	} else {
+		m_data = "";
+	}
+}
+
+void Form5ReferenceState::render() {
+	sf::RectangleShape bg(sf::Vector2f(App::get().window().getSize()));
+	bg.setTexture(&TextureHolder::get()[m_bgTextureName], true);
+	App::get().window().draw(bg);
+	if (m_data == "") {
+		return;
+	}
+	sf::Vector2f winSize(App::get().window().getSize());
+	sf::Vector2f bgSize(TextureHolder::get()["mainMenu"].getSize());
+	sf::Vector2f ulCorner(pairwiseMultiply(pairwiseDivide(sf::Vector2f(
+		m_button.left, m_button.top), bgSize), winSize));
+	sf::Vector2f drCorner(pairwiseMultiply(pairwiseDivide(sf::Vector2f(
+		m_button.width, m_button.height), bgSize), winSize));
+	sf::RectangleShape button(drCorner - ulCorner);
+	button.setPosition(ulCorner);
+	button.setFillColor(sf::Color(255, 255, 255, 128));
+	App::get().window().draw(button);
 }
 

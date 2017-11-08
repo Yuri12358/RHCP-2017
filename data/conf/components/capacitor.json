@@ -1,0 +1,21 @@
+{
+	"type": "capacitor",
+	"name": "Capacitor",
+	"width": 2,
+	"height": 2,
+	"texture": "capacitor",
+	"pins": [
+		{
+			"x": 0,
+			"y": 1
+		},
+		{
+			"x": 2,
+			"y": 1
+		}
+	],
+	"properties": {
+		"capacity": 1
+	}
+}
+

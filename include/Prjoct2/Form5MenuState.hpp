@@ -53,5 +53,28 @@ public:
 	void render();
 };
 
+class Form5ChooseGenderState : public MenuState {
+	std::map<std::string, sf::FloatRect> m_buttons;
+
+public:
+	typedef std::shared_ptr<Form5ChooseGenderState> Ptr;
+
+	Form5ChooseGenderState();
+	void handleEvent(sf::Event event);
+	void update();
+	void render();
+};
+
+class Form5ReferenceState : public MenuState {
+	sf::FloatRect m_button;
+	std::string m_bgTextureName;
+
+public:
+	Form5ReferenceState(const std::string & bg);
+	void handleEvent(sf::Event event);
+	void update();
+	void render();
+};
+
 #endif // FORM5_CORRIDOR_MENU_STATE_HPP
 
